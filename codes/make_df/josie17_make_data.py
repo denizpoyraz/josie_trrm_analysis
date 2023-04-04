@@ -95,11 +95,9 @@ for filename in allFiles:
         columns=columnMeta
     ))
 
-   #note that there was a mistake in the original josie data processing that TPext is used for internal pump temp.
-    df['PO3_OPM'] = df['PO3_OPM'] * 1.01293
 
     # 2023 update:
-    df['PO3_OPM'] = df['PO3_OPM'] * 1.01293
+    df['PO3_OPM'] = df['PO3_OPM'] * opm_update
     ## the TPint values in the data need to be inter-changed with TPext, therefore for calculation of PO3,
     # TPext needs to be used.
     # Truest Pump temperature correction

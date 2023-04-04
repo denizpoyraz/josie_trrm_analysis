@@ -10,10 +10,10 @@ from constant_variables import *
 
 beta_spe = False
 bool_9602 = False
-bool_0910_decay = False
-bool_2017 = True
+bool_0910_decay = True
+bool_2017 = False
 
-year = '2017'
+year = '0910'
 file_out = f'Josie{year}_deconv_2023paper.csv'
 if bool_0910_decay:file_out = 'Josie0910_deconv_2023_decay_added_147-149.csv'
 df = pd.read_csv(f"/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie{year}_Data_2023paper.csv", low_memory=False)
