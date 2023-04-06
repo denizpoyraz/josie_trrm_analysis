@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+import math
 from numpy.polynomial import polynomial as P
 import matplotlib.gridspec as gridspec
 
@@ -11,6 +12,79 @@ import matplotlib.pyplot as plt
 # from functions.josie_functions import Calc_average_profileCurrent_pressure, Calc_average_profile_time, Calc_average_profile_Pair, Calc_average_profile_pressure
 # from functions.plotting_functions import  filter_rdif_all
 from data_cuts import cuts2017
+
+def filter_solsonde(df):
+    filtEN = df.ENSCI == 1
+    filtSP = df.ENSCI == 0
+
+    filtS10 = df.Sol == 1
+    filtS05 = df.Sol == 0.5
+
+    filtB10 = df.Buf == 1.0
+    filtB05 = df.Buf == 0.5
+
+    filterEN0505 = (filtEN & filtS05 & filtB05)
+    filterEN1010 = (filtEN & filtS10 & filtB10)
+
+    profEN0505 = df.loc[filterEN0505]
+    profEN1010 = df.loc[filterEN1010]
+    profEN0505_nodup = profEN0505.drop_duplicates(['Sim', 'Team'])
+    profEN1010_nodup = profEN1010.drop_duplicates(['Sim', 'Team'])
+
+    ###
+    filterSP1010 = (filtSP & filtS10 & filtB10)
+    filterSP0505 = (filtSP & filtS05 & filtB05)
+
+    profSP1010 = df.loc[filterSP1010]
+    profSP0505 = df.loc[filterSP0505]
+    profSP1010_nodup = profSP1010.drop_duplicates(['Sim', 'Team'])
+    profSP0505_nodup = profSP0505.drop_duplicates(['Sim', 'Team'])
+
+    return profEN0505_nodup, profEN1010_nodup, profSP0505_nodup, profSP1010_nodup
+
+def filter_df(df):
+    filtEN = df.ENSCI == 1
+    filtSP = df.ENSCI == 0
+
+    filtS10 = df.Sol == 1
+    filtS05 = df.Sol == 0.5
+
+    filtB10 = df.Buf == 1.0
+    filtB05 = df.Buf == 0.5
+
+    filterEN0505 = (filtEN & filtS05 & filtB05)
+    filterEN1010 = (filtEN & filtS10 & filtB10)
+
+    profEN0505 = df.loc[filterEN0505]
+    profEN1010 = df.loc[filterEN1010]
+    profEN0505_nodup = profEN0505.drop_duplicates(['Sim', 'Team'])
+    profEN1010_nodup = profEN1010.drop_duplicates(['Sim', 'Team'])
+
+    ###
+    filterSP1010 = (filtSP & filtS10 & filtB10)
+    filterSP0505 = (filtSP & filtS05 & filtB05)
+
+    profSP1010 = df.loc[filterSP1010]
+    profSP0505 = df.loc[filterSP0505]
+    profSP1010_nodup = profSP1010.drop_duplicates(['Sim', 'Team'])
+    profSP0505_nodup = profSP0505.drop_duplicates(['Sim', 'Team'])
+
+    sim_en0505 = profEN0505_nodup.Sim.tolist()
+    team_en0505 = profEN0505_nodup.Team.tolist()
+
+    sim_en1010 = profEN1010_nodup.Sim.tolist()
+    team_en1010 = profEN1010_nodup.Team.tolist()
+
+    sim_sp0505 = profSP0505_nodup.Sim.tolist()
+    team_sp0505 = profSP0505_nodup.Team.tolist()
+
+    sim_sp1010 = profSP1010_nodup.Sim.tolist()
+    team_sp1010 = profSP1010_nodup.Team.tolist()
+
+    sim = [sim_en0505, sim_en1010, sim_sp0505, sim_sp1010]
+    team = [team_en0505, team_en1010, team_sp0505, team_sp1010]
+
+    return sim, team
 
 
 def filter_rdif_all(dft):
@@ -281,3 +355,34 @@ def VecInterpolate_log(XValues, YValues, unc_YValues, dft, Pair):
 
     return dft['Cpf'], dft['unc_Cpf']
     # return dft
+
+
+
+
+def filter20(df):
+    filtEN = df.ENSCI == 1
+    filtSP = df.ENSCI == 0
+
+    filtS20 = df.Sol == 2
+
+    filtB0 = df.Buf == 0.0
+
+    filterEN2000 = (filtEN & filtS20 & filtB0)
+    filterSP2000 = (filtSP & filtS20 & filtB0)
+
+    profEN2000 = df.loc[filterEN2000]
+    profSP2000 = df.loc[filterSP2000]
+    profEN2000_nodup = profEN2000.drop_duplicates(['Sim', 'Team'])
+    profSP2000_nodup = profSP2000.drop_duplicates(['Sim', 'Team'])
+
+    sim_en2000 = profEN2000_nodup.Sim.tolist()
+    sim_sp2000 = profSP2000_nodup.Sim.tolist()
+    team_en2000 = profEN2000_nodup.Team.tolist()
+    team_sp2000 = profSP2000_nodup.Team.tolist()
+
+
+
+    sim = [sim_en2000, sim_sp2000]
+    team = [team_en2000, team_sp2000]
+
+    return sim, team

@@ -1,18 +1,14 @@
 import numpy as np
 import pandas as pd
 from scipy import stats
-# Libraries
-import matplotlib.pyplot as plt
-from matplotlib import gridspec
-from matplotlib.ticker import ScalarFormatter
 from data_cuts import cuts0910, cuts2017, cuts9602
-from plotting_functions import filter_rdif, filter_rdif_all
-from analyse_functions import Calc_average_Dif_yref,apply_calibration
+from plotting_functions import filter_rdif_all
+from analyse_functions import apply_calibration
 from constant_variables import *
 import warnings
 warnings.filterwarnings("ignore")
 
-#code to make final fitting plots of the all sonde solution types
+#code to obtaion calibration functions of the all sonde solution types
 
 def cal_dif(df, var1, var2, adif, rdif):
 
@@ -28,10 +24,10 @@ def print_fit_variables(nametag, alist, alist_err, blist, blist_err):
     print('b=', blist)
     print('b_err=', blist_err)
 
-write_to_df = False
+write_to_df = True
 
-df96c = pd.read_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie9602_deconv_2023.csv", low_memory=False)
-df96c = df96c[df96c.iB1 > -9]
+# df96c = pd.read_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie9602_deconv_2023.csv", low_memory=False)
+# df96c = df96c[df96c.iB1 > -9]
 
 df17c = pd.read_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie2017_deconv_2023paper.csv", low_memory=False)
 
@@ -39,24 +35,25 @@ df09c = pd.read_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/"
                     "Josie0910_deconv_2023_unitedpaper.csv",low_memory=False)
 
 df09c['Ifast_minib0_deconv_sm10'] = df09c['Ifast_minib0_deconv_ib1_decay'].rolling(window=5, center=True).mean()
-df96c['Ifast_minib0_deconv_sm10'] = df96c['Ifast_minib0_deconv'].rolling(window=5, center=True).mean()
+# df96c['Ifast_minib0_deconv_sm10'] = df96c['Ifast_minib0_deconv'].rolling(window=5, center=True).mean()
 df17c['Ifast_minib0_deconv_sm10'] = df17c['Ifast_minib0_deconv'].rolling(window=5, center=True).mean()
 
 df09 = cuts0910(df09c)
 df17 = cuts2017(df17c)
-df96 = cuts9602(df96c)
+# df96 = cuts9602(df96c)
 
 df09['Year'] = '0910'
 df17['Year'] = '2017'
-df96['Year'] = '9602'
+# df96['Year'] = '9602'
 
 # dfa = pd.concat([df09, df17, df96], ignore_index=True)
 dfa = pd.concat([df09, df17], ignore_index=True)
 
-year = '0910'
+# year = '2017'
 # year = '1998'
-df = dfa[dfa.Year == year]
-# df = dfa
+year = '0910/2017'
+# df = dfa[dfa.Year == year]
+df = dfa
 
 df['ADif'], df['RDif'] = cal_dif(df, 'IM', 'I_OPM_kom', 'ADif', 'RDif')
 df['ADif_cor'], df['RDif_cor'] = cal_dif(df, 'Ifast_minib0_deconv_sm10', 'I_OPM_jma', 'ADif_cor', 'RDif_cor')
@@ -71,8 +68,8 @@ prof = filter_rdif_all(df)
 
 
 slist = [0,1,2,3,4,5]
-if year == '0910':slist = [0,1,3,4]
-if year == '2017': slist = [0,2,4,5]
+# if year == '0910':slist = [0,1,3,4]
+# if year == '2017': slist = [0,2,4,5]
 
 ls = len(slist)
 ls = 6
@@ -185,17 +182,19 @@ print_fit_variables(f'w.r.t. po3 - {year}', alist_pre, alist_pre_err, blist_pre,
 ######################################################
 #now apply calibration functions
 
-slist = [0,1,3,4]
-year = '2017'
-if year == '2017': slist = [0,2,4,5]
-df = dfa[dfa.Year == year ]
+
 # df = df96
 
 if write_to_df:
 
+    slist = [0, 1, 3, 4]
+    year = '2017'
+    if year == '2017': slist = [0, 2, 4, 5]
+    df = dfa[dfa.Year == year]
+
     prof_cor = apply_calibration(df, coeff)
 
-    df_cor = pd.concat([prof_cor[0], prof_cor[1], prof_cor[3], prof_cor[4]], ignore_index=True)
+    df_cor = pd.concat([prof_cor[0], prof_cor[2], prof_cor[4], prof_cor[5]], ignore_index=True)
     df_cor['ADif'], df_cor['RDif'] = cal_dif(df_cor, 'IM', 'I_OPM_kom', 'ADif', 'RDif')
     df_cor['ADif_cor'], df_cor['RDif_cor'] = cal_dif(df_cor, 'Ifast_minib0_deconv_sm10', 'I_OPM_jma', 'ADif_cor', 'RDif_cor')
     df_cor['ADif_cal'], df_cor['RDif_cal'] = cal_dif(df_cor, 'I_corrected', 'I_OPM_jma', 'ADif_cal',

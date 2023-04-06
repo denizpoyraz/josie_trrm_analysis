@@ -2,59 +2,7 @@ import pandas as pd
 from convolution_functions import convolution, convolution_islow0
 from constant_variables import *
 
-## updated version of Beta_Convoluted_final to consider I slow = I prep(Tprep_end)
 
-def mederr(med):
-    err = (np.nanquantile(med, 0.75) - np.nanquantile(med, 0.25)) / (2 * 0.6745)
-    return err
-
-
-def filter(df):
-    filtEN = df.ENSCI == 1
-    filtSP = df.ENSCI == 0
-
-    filtS10 = df.Sol == 1
-    filtS05 = df.Sol == 0.5
-
-    filtB10 = df.Buf == 1.0
-    filtB05 = df.Buf == 0.5
-
-    filterEN0505 = (filtEN & filtS05 & filtB05)
-    filterEN1010 = (filtEN & filtS10 & filtB10)
-
-    profEN0505 = df.loc[filterEN0505]
-    profEN1010 = df.loc[filterEN1010]
-    profEN0505_nodup = profEN0505.drop_duplicates(['Sim', 'Team'])
-    profEN1010_nodup = profEN1010.drop_duplicates(['Sim', 'Team'])
-
-    ###
-    filterSP1010 = (filtSP & filtS10 & filtB10)
-    filterSP0505 = (filtSP & filtS05 & filtB05)
-
-    profSP1010 = df.loc[filterSP1010]
-    profSP0505 = df.loc[filterSP0505]
-    profSP1010_nodup = profSP1010.drop_duplicates(['Sim', 'Team'])
-    profSP0505_nodup = profSP0505.drop_duplicates(['Sim', 'Team'])
-
-    sim_en0505 = profEN0505_nodup.Sim.tolist()
-    team_en0505 = profEN0505_nodup.Team.tolist()
-
-    sim_en1010 = profEN1010_nodup.Sim.tolist()
-    team_en1010 = profEN1010_nodup.Team.tolist()
-
-    sim_sp0505 = profSP0505_nodup.Sim.tolist()
-    team_sp0505 = profSP0505_nodup.Team.tolist()
-
-    sim_sp1010 = profSP1010_nodup.Sim.tolist()
-    team_sp1010 = profSP1010_nodup.Team.tolist()
-
-    sim = [sim_en0505, sim_en1010, sim_sp0505, sim_sp1010]
-    team = [team_en0505, team_en1010, team_sp0505, team_sp1010]
-
-    return sim, team
-
-
-# now use this beta values for the deconvolution of the signal and make a DF
 
 # df = pd.read_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie0910_preparationadded_updjma.csv", low_memory=False)
 df = pd.read_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie0910_preparationadded_2023paper.csv", low_memory=False)

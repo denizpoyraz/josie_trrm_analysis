@@ -10,10 +10,10 @@ from constant_variables import *
 
 beta_spe = False
 bool_9602 = False
-bool_0910_decay = True
-bool_2017 = False
+bool_0910_decay = False
+bool_2017 = True
 
-year = '0910'
+year = '2017'
 file_out = f'Josie{year}_deconv_2023paper.csv'
 if bool_0910_decay:file_out = 'Josie0910_deconv_2023_decay_added_147-149.csv'
 df = pd.read_csv(f"/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie{year}_Data_2023paper.csv", low_memory=False)
@@ -156,18 +156,7 @@ for j in range(len(simlist)):
     if not bool_0910_decay:
         dft[j]['Ifast_minib0_deconv_sm10'] = dft[j]['Ifast_minib0_deconv'].rolling(window=5, center=True).mean()
 
-    # dft[j]['PO3_trrm'] = 0.043085 * dft[j]['Tpump_cor'] * (dft[j]['Ifast_minib0_deconv_sm10']) / \
-    #                      (1 * dft[j]['PFcor_jma'])
 
-
-    # O3, O3_tot_opm = calculate_totO3OPM_var(dft[j], 'PO3_jma')
-    # O3_deconv, O3_tot_opm = calculate_totO3OPM_var(dft[j], 'PO3_deconv_jma')
-    # O3_deconv_sm, O3_tot_opm = calculate_totO3OPM_var(dft[j], 'PO3_deconv_jma_sm')
-    #
-    # dft[j]['tot_O3'] = O3
-    # dft[j]['tot_O3_deconv'] = O3_deconv
-    # dft[j]['O3_deconv_sm'] = O3_deconv_sm
-    # dft[j]['tot_OPM'] = O3_tot_opm
 
     list_data.append(dft[j])
 
@@ -178,3 +167,11 @@ df_dc.to_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/" + file_out)
 # df_dc.to_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie9602_deconv_updjma.csv")
 
 
+# O3, O3_tot_opm = calculate_totO3OPM_var(dft[j], 'PO3_jma')
+    # O3_deconv, O3_tot_opm = calculate_totO3OPM_var(dft[j], 'PO3_deconv_jma')
+    # O3_deconv_sm, O3_tot_opm = calculate_totO3OPM_var(dft[j], 'PO3_deconv_jma_sm')
+    #
+    # dft[j]['tot_O3'] = O3
+    # dft[j]['tot_O3_deconv'] = O3_deconv
+    # dft[j]['O3_deconv_sm'] = O3_deconv_sm
+    # dft[j]['tot_OPM'] = O3_tot_opm

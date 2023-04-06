@@ -1,7 +1,4 @@
-#!/usr/bin/env python
-# coding: utf-8
 
-# In[1]:
 
 import pandas as pd
 import numpy as np
@@ -112,8 +109,6 @@ for filename in allFiles:
     not_filt_01 = (df.Buf != 0.1)
 
 
-    print('begin')
-
     df.loc[filt_en, 'Cpf_kom'], df.loc[filt_en, 'unc_Cpf_kom'] = VecInterpolate_log(pvallog, komhyr_95, komhyr_95_unc,
                                                                                     df[filt_en], 'Pair')
     df.loc[filt_sp, 'Cpf_kom'], df.loc[filt_sp, 'unc_Cpf_kom'] = VecInterpolate_log(pvallog, komhyr_86, komhyr_86_unc,
@@ -123,7 +118,6 @@ for filename in allFiles:
     df['PFcor_kom'] = df['PFcor'] / df['Cpf_kom']
     df['PFcor_jma'] = df['PFcor'] / df['Cpf_jma']
 
-    print('end')
     ## convert OPM pressure to current
     df['I_OPM_jma'] = (df['PO3_OPM'] * df['PFcor_jma']) / (df['Tpump_cor'] * 0.043085)
     df['I_OPM_kom'] = (df['PO3_OPM'] * df['PFcor_kom']) / (df['Tpump_cor'] * 0.043085)
@@ -195,8 +189,6 @@ for filename in allFiles:
     df['I_conv_slow'] = Ums_i
     df['I_conv_slow_komhyr'] = Ums_i_kom
 
-
-
     list_data.append(df)
     #  end of the allfiles loop    #
 
@@ -225,22 +217,5 @@ for s in simlist:
 
 
 # df.to_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie2017_Data_nocut_2022_updjma.csv")
-df.to_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie2017_Data_2023_paper.csv")
+df.to_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie2017_Data_2023paper.csv")
 #
-# 2023 -> OPM updated to * 1.29 and I_OPM_JMA added
-# paper -> I_OPM is calculated using TPump corrected and Pf_cor_pumpflow_efficiency
-# In[ ]:
-
-
-## aply the cuts here for O3 calculation
-#
-# df = df.drop(df[((df.Sim == 171) | (df.Sim == 172) | (df.Sim == 180) | (df.Sim == 185))].index)
-# df = df.drop(df[(df.Sim == 179) & (df.Team == 4) & (df.Tsim > 4000)].index)
-# df = df.drop(df[(df.Sim == 172) & (df.Tsim < 500)].index)
-# df = df.drop(df[(df.Sim == 172) & (df.Team == 1) & (df.Tsim > 5000) & (df.Tsim < 5800)].index)
-# df = df.drop(df[(df.Sim == 178) & (df.Team == 3) & (df.Tsim > 1700) & (df.Tsim < 2100)].index)
-# df = df.drop(df[(df.Sim == 178) & (df.Team == 3) & (df.Tsim > 2500) & (df.Tsim < 3000)].index)
-#
-# df = df.drop(df[((df.Sim == 175))].index)
-# df = df.drop(df[((df.Tsim > 7000))].index)
-

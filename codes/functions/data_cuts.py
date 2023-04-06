@@ -38,16 +38,7 @@ def cuts0910(dfm):
     dfm = dfm.drop(dfm[(dfm.Sim == 147) & (dfm.Team == 3)].index)
     dfm = dfm.drop(dfm[(dfm.Sim == 158) & (dfm.Team == 2)].index)
     dfm = dfm.drop(dfm[(dfm.Sim == 167) & (dfm.Team == 4)].index)
-    # ## new cuts v2 20/05
-    # dfm = dfm.drop(dfm[(dfm.Sim == 160) & (dfm.Team == 4)].index)
-    # dfm = dfm.drop(dfm[(dfm.Sim == 165) & (dfm.Team == 4)].index)
 
-    # # ## v3 cuts
-    ### I think these cuts are not needed## checkcheck
-    # dfm = dfm.drop(dfm[(dfm.Sim == 159) & (dfm.Team == 1)].index)
-    # dfm = dfm.drop(dfm[(dfm.Sim == 158) & (dfm.Team == 1)].index)
-    # dfm = dfm.drop(dfm[(dfm.Sim == 163) & (dfm.Team == 4)].index)
-    # dfm = dfm.drop(dfm[(dfm.Sim == 159) & (dfm.Team == 4)].index)
 
     return dfm
 
