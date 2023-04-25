@@ -2,21 +2,10 @@ import pandas as pd
 import numpy as np
 import glob
 from pathlib import Path
-import re
+from homogenization_functions import pumptemp_corr
+from analyse_functions import VecInterpolate_log
+from constant_variables import *
 
-slow = 25 * 60  # 25 minutes in seconds
-fast = 25  # 25seconds
-
-Pval = [1000,200, 100, 50, 30, 20, 10, 7, 5, 4, 3]
-JMA = [1, 0.9881422924901185, 0.9784735812133072, 0.9633911368015414, 0.9478672985781991, 0.929368029739777, 0.8826125330979699, 0.8474576271186441, 0.8071025020177562, 0.7763975155279503, 0.7347538574577517]
-
-#2023 update
-Pval_komhyr = np.array([1000, 100, 50, 30, 20, 10, 7, 5, 3])
-komhyr_sp_tmp = np.array([1, 1.007, 1.018, 1.022, 1.032, 1.055, 1.070, 1.092, 1.124])  # SP Komhyr 86
-komhyr_en_tmp = np.array([1, 1.007, 1.018, 1.029, 1.041, 1.066, 1.087, 1.124, 1.241])  # ENSCI Komhyr 95
-
-komhyr_sp = [1 / i for i in komhyr_sp_tmp]
-komhyr_en = [1 / i for i in komhyr_en_tmp]
 
 # Read the metadata file
 dfmeta = pd.read_excel("/home/poyraden/Analysis/JOSIEfiles/JOSIE-96-02/Josie_2000_metadata.xls")
@@ -76,9 +65,9 @@ for filename in filenamespath:
 
     sim = int(infolist[4].split("'")[1].split("*")[0])
     team = int(infolist[8].split("'")[1].split("*")[0])
-    print(team)
+    # print(team)
     PFcor = float(infolist[18].split("'")[1].split("*")[0])/60
-    print(sim, team, PFcor)
+    # print(sim, team, PFcor)
 
     df = pd.read_csv(filename, engine="python", sep="\s+", skiprows=53, names=columnStr)
     #     ,  encoding = "ISO-8859-1"
@@ -118,66 +107,37 @@ for filename in filenamespath:
 
     # 2023 update
     # df['PO3_OPM'] = df['PO3_OPM'] + (df['PO3_OPM'] * 1.29 / 100)
-    df['PO3_OPM'] = df['PO3_OPM'] * 1.01293
+    df['PO3_OPM'] = df['PO3_OPM'] * opm_update
 
     print(df['PO3_OPM'].dtypes, df['PFcor'].dtypes, df['TPint'].dtypes )
 
     ## convert OPM pressure to current
-    df['I_OPM'] = (df['PO3_OPM'] * df['PFcor']) / (df['TPint'] * 0.043085)
 
     df['unc_Tpump'] = 0.5
-    df['Tpump_cor'] = df['TPint']
-    df['unc_Tpump_cor'] = (df['unc_Tpump'] ** 2 / df['Tpump_cor'] ** 2)
+    df['Tpump_cor'], df['unc_Tpump_cor'] = pumptemp_corr(df, 'case5', 'TPext', 'unc_Tpump',
+                                                         'Pair')
 
-    for k in range(len(df)):
-        ## jma corrections for OPM current, I_OPM_jma will be used only for Ua in the convolution of
-        ## the slow component of the signal
-        for p in range(len(JMA) - 1):
-            if (df.at[k, 'Pair'] >= Pval[p + 1]) & (df.at[k, 'Pair'] < Pval[p]):
-                # print(p, Pval[p + 1], Pval[p ])
-                df.at[k, 'I_OPM_jma'] = df.at[k, 'PO3_OPM'] * df.at[k, 'PFcor'] * JMA[p] / \
-                                          (df.at[k, 'TPint'] * 0.043085)
-                df.at[k, 'I_OPM_jma_tpcor'] = df.at[k, 'PO3_OPM'] * df.at[k, 'PFcor'] * JMA[p] / \
-                                        (df.at[k, 'Tpump_cor'] * 0.043085)
+    filt_sp = (df.ENSCI == 0)
+    filt_en = (df.ENSCI == 1)
 
-        if (df.at[k, 'Pair'] <= Pval[-1]):
-            df.at[k, 'I_OPM_jma'] = df.at[k, 'PO3_OPM'] * df.at[k, 'PFcor'] * JMA[-1] / \
-                                          (df.at[k, 'TPint'] * 0.043085)
-            df.at[k, 'I_OPM_jma_tpcor'] = df.at[k, 'PO3_OPM'] * df.at[k, 'PFcor'] * JMA[-1] / \
-                                    (df.at[k, 'Tpump_cor'] * 0.043085)
-        if (df.at[k, 'Pair'] >= Pval[0]):
-            df.at[k, 'I_OPM_jma'] = df.at[k, 'PO3_OPM'] * df.at[k, 'PFcor'] * JMA[0] / \
-                                    (df.at[k, 'TPint'] * 0.043085)
-            df.at[k, 'I_OPM_jma_tpcor'] = df.at[k, 'PO3_OPM'] * df.at[k, 'PFcor'] * JMA[0] / \
-                                    (df.at[k, 'Tpump_cor'] * 0.043085)
+    print('begin')
 
-        # ## komhyr corrections
-        for p in range(len(komhyr_en) - 1):
+    df.loc[filt_en, 'Cpf_kom'], df.loc[filt_en, 'unc_Cpf_kom'] = VecInterpolate_log(pvallog, komhyr_95, komhyr_95_unc,
+                                                                                    df[filt_en], 'Pair')
+    df.loc[filt_sp, 'Cpf_kom'], df.loc[filt_sp, 'unc_Cpf_kom'] = VecInterpolate_log(pvallog, komhyr_86, komhyr_86_unc,
+                                                                                    df[filt_sp], 'Pair')
 
-            if df.at[k, 'ENSCI'] == 1:
-                if (df.at[k, 'Pair'] >= Pval_komhyr[p + 1]) & (df.at[k, 'Pair'] < Pval_komhyr[p]):
-                    df.at[k, 'I_OPM_kom'] = df.at[k, 'PO3_OPM'] * df.at[k, 'PFcor'] * komhyr_en[p] / \
-                                            (df.at[k, 'TPext'] * 0.043085)
-                    df.at[k, 'I_OPM_kom_tpcor'] = df.at[k, 'PO3_OPM'] * df.at[k, 'PFcor'] * komhyr_en[p] / \
-                                            (df.at[k, 'Tpump_cor'] * 0.043085)
-            if df.at[k, 'ENSCI'] == 0:
-                if (df.at[k, 'Pair'] >= Pval_komhyr[p + 1]) & (df.at[k, 'Pair'] < Pval_komhyr[p]):
-                    df.at[k, 'I_OPM_kom'] = df.at[k, 'PO3_OPM'] * df.at[k, 'PFcor'] * komhyr_sp[p] / \
-                                            (df.at[k, 'TPext'] * 0.043085)
-                    df.at[k, 'I_OPM_kom_tpcor'] = df.at[k, 'PO3_OPM'] * df.at[k, 'PFcor'] * komhyr_sp[p] / \
-                                            (df.at[k, 'Tpump_cor'] * 0.043085)
+    df['Cpf_jma'], df['unc_Cpf_jma'] = VecInterpolate_log(pvallog_jma, JMA, jma_unc, df, 'Pair')
+    df['PFcor_kom'] = df['PFcor'] / df['Cpf_kom']
+    df['PFcor_jma'] = df['PFcor'] / df['Cpf_jma']
 
-        if (df.at[k, 'Pair'] <= Pval_komhyr[-1]):
-            if df.at[k, 'ENSCI'] == 1:
-                df.at[k, 'I_OPM_kom'] = df.at[k, 'PO3_OPM'] * df.at[k, 'PFcor'] * komhyr_en[-1] / \
-                                        (df.at[k, 'TPext'] * 0.043085)
-                df.at[k, 'I_OPM_kom_tpcor'] = df.at[k, 'PO3_OPM'] * df.at[k, 'PFcor'] * komhyr_en[-1] / \
-                                        (df.at[k, 'Tpump_cor'] * 0.043085)
-            if df.at[k, 'ENSCI'] == 0:
-                df.at[k, 'I_OPM_kom'] = df.at[k, 'PO3_OPM'] * df.at[k, 'PFcor'] * komhyr_sp[-1] / \
-                                        (df.at[k, 'TPext'] * 0.043085)
-                df.at[k, 'I_OPM_kom_tpcor'] = df.at[k, 'PO3_OPM'] * df.at[k, 'PFcor'] * komhyr_sp[-1] / \
-                                        (df.at[k, 'Tpump_cor'] * 0.043085)
+    print('end')
+    ## convert OPM pressure to current
+    df['I_OPM_jma'] = (df['PO3_OPM'] * df['PFcor_jma']) / (df['Tpump_cor'] * 0.043085)
+    df['I_OPM_kom'] = (df['PO3_OPM'] * df['PFcor_kom']) / (df['Tpump_cor'] * 0.043085)
+
+    df['PO3_calc'] = (0.043085 * df['TPext'] * (df['IM'] - df['iB1'])) / (df['PFcor_kom'])
+    df['PO3_dqa'] = (0.043085 * df['Tpump_cor'] * (df['IM'] - df['iB1'])) / (df['PFcor_kom'])
 
     size = len(df)
     Ums_i = [0] * size
@@ -192,7 +152,6 @@ for filename in filenamespath:
         t1 = df.at[i + 1,'Tsim']
         t2 = df.at[i,'Tsim']
         Xs = np.exp(-(t1 - t2) / slow)
-        Xf = np.exp(-(t1 - t2) / fast)
         Ums_i[i + 1] = Ua_i - (Ua_i - Ums_i[i]) * Xs
 
     df['I_conv_slow'] = Ums_i
@@ -226,9 +185,10 @@ df = df.drop(['Alt_Sim', 'Auxiliary', 'Cur_Motor', 'Data_FIleName','GAW_Report_N
               'Temp_PmpInt', 'Time_Day', 'Time_Sim','Validity_Nr'], axis=1)
 
 
-clist =['JOSIE_Nr','Tsim', 'Sim', 'Team', 'ENSCI', 'Sol', 'Buf', 'iB0', 'iB1', 'Pair','PO3', 'IM','TPint', 'PO3_OPM', 'I_OPM',
-        'I_OPM_jma','I_OPM_jma_tpcor','I_conv_slow','I_OPM_kom','I_OPM_kom_tpcor','Tpump_cor','unc_Tpump_cor',
-        'PFcor', 'R1_Tstart', 'R1_Tstop', 'R2_Tstart', 'R2_Tstop', 'SST_Nr', 'SondeTypeNr']
+clist =['JOSIE_Nr','Tsim', 'Sim', 'Team', 'ENSCI', 'Sol', 'Buf', 'iB0', 'iB1', 'Pair','PO3','PO3_dqa', 'IM','TPint', 'PO3_OPM',
+        'I_OPM_jma','I_conv_slow','I_OPM_kom','Tpump_cor','unc_Tpump_cor',
+        'PFcor', 'R1_Tstart', 'R1_Tstop', 'R2_Tstart', 'R2_Tstop', 'SST_Nr', 'SondeTypeNr', 'Cpf_jma','Cpf_kom','PFcor_jma',
+        'PFcor_kom', 'unc_Cpf_jma', 'unc_Cpf_kom']
 df = df.reindex(columns=clist)
 
 df.to_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie2000_Data_2023.csv")

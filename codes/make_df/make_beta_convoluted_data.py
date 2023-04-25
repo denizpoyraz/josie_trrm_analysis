@@ -9,14 +9,17 @@ from constant_variables import *
 # now use this beta values * 0.1 for the deconvolution of the signal and make a DF
 
 beta_spe = False
-bool_9602 = False
+bool_9602 = True
 bool_0910_decay = False
-bool_2017 = True
+bool_2017 = False
 
-year = '2017'
+year = '9602'
 file_out = f'Josie{year}_deconv_2023paper.csv'
 if bool_0910_decay:file_out = 'Josie0910_deconv_2023_decay_added_147-149.csv'
 df = pd.read_csv(f"/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie{year}_Data_2023paper.csv", low_memory=False)
+if bool_2017:
+    df = pd.read_csv(f"/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie{year}_Data_2023paper_ib2.csv", low_memory=False)
+    file_out = f'Josie{year}_deconv_2023paper_ib2.csv'
 
 ####            #######             ########
 
@@ -24,44 +27,6 @@ if bool_0910_decay:
     df = df[(df.Sim > 146) & (df.Sim < 150)]
 
 
-if bool_9602:
-    ind1 = df[(df['Sim'] < 31) & ((df['Team'] == 1) | (df['Team'] == 2) | (df.Team == 4))].index
-    df = df.drop(ind1)
-    ind2 = df[(df['Sim'] > 30) & (df['Sim'] < 37) & (
-                (df['Team'] == 5) | (df['Team'] == 7) | (df.Team == 8))].index
-    df = df.drop(ind2)
-    df = df[df.Sim != 34]
-    # df.loc[]
-    df.loc[df.Sim < 51,'IM'] = df.loc[df.Sim < 51,'I_Sonde']
-    df.loc[df.Sim < 51,'TPext'] = df.loc[df.Sim < 51,'T_Sonde']
-    df.loc[df.Sim > 51,'TPext'] = df.loc[df.Sim > 51,'TPint']
-
-    df.loc[(df.Sim < 37) & (df.Team ==3),'Sol'] = 1.0
-    df.loc[(df.Sim < 37) & (df.Team ==3),'Buf'] = 1.0
-    df.loc[(df.Sim < 37) & (df.Team ==3),'ENSCI'] = 0
-
-    df.loc[(df.Sim < 37) & (df.Team == 6), 'Sol'] = 1.0
-    df.loc[(df.Sim < 37) & (df.Team == 6), 'Buf'] = 1.0
-    df.loc[(df.Sim < 37) & (df.Team == 6), 'ENSCI'] = 0
-
-
-    slist_1 = [25, 26, 27, 28, 29, 30]
-    ib0_1 = [0.01, 0.02, 0.03, 0.01, 0.01, 0.01]
-    ib1_1 = [0.05, 0.08, 0.11, 0.06, 0.07, 0.05]
-
-    slist_2 = [31, 32, 33, 34, 35, 36]
-    ib0_2 = [0.02, 0.0, 0.02, 0.03, 0.02, 0.01]
-    ib1_2 = [0.06, 0.05, 0.07, 0.08, 0.06, 0.05]
-
-    for k in range(len(slist_1)):
-        df.loc[df.Sim == slist_1[k], 'iB0'] = ib0_1[k]
-        df.loc[df.Sim == slist_1[k], 'iB1'] = ib1_1[k]
-
-        df.loc[df.Sim == slist_2[k], 'iB0'] = ib0_2[k]
-        df.loc[df.Sim == slist_2[k], 'iB1'] = ib1_2[k]
-
-    df['ib1-ib0'] = df['iB1'] - df['iB0']
-    # df = df[df.Sim > 50]
 
 # Josie9602_Data_updjma
 df['TS'] = pd.to_datetime(df.Tsim, unit='s')

@@ -23,7 +23,9 @@ print('p_spc:', np.array(p_sp))
 
 
 # Read the metadata file
-dfmeta = pd.read_csv("/home/poyraden/Analysis/JOSIEfiles/JOSIE_Table_2017_summary.csv")
+# dfmeta = pd.read_csv("/home/poyraden/Analysis/JOSIEfiles/JOSIE_Table_2017_summary.csv")
+#updated iB2 values
+dfmeta = pd.read_excel("/home/poyraden/Analysis/JOSIEfiles/JOSIE_Table_2017_summary_upd.xlsx")
 
 # Path to all Josie17 simulation files
 allFiles = glob.glob("/home/poyraden/Analysis/JOSIEfiles/Josie17/*.O3R")
@@ -217,5 +219,5 @@ for s in simlist:
 
 
 # df.to_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie2017_Data_nocut_2022_updjma.csv")
-df.to_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie2017_Data_2023paper.csv")
+df.to_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie2017_Data_2023paper_ib2.csv")
 #

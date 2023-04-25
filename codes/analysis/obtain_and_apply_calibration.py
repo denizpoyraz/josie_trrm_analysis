@@ -26,33 +26,37 @@ def print_fit_variables(nametag, alist, alist_err, blist, blist_err):
 
 write_to_df = True
 
-# df96c = pd.read_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie9602_deconv_2023.csv", low_memory=False)
-# df96c = df96c[df96c.iB1 > -9]
+df96c = pd.read_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie9602_deconv_2023paper.csv", low_memory=False)
+df96c = df96c[df96c.iB1 > -9]
 
-df17c = pd.read_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie2017_deconv_2023paper.csv", low_memory=False)
+df17c = pd.read_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie2017_deconv_2023paper_ib2.csv", low_memory=False)
 
 df09c = pd.read_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/"
                     "Josie0910_deconv_2023_unitedpaper.csv",low_memory=False)
 
 df09c['Ifast_minib0_deconv_sm10'] = df09c['Ifast_minib0_deconv_ib1_decay'].rolling(window=5, center=True).mean()
-# df96c['Ifast_minib0_deconv_sm10'] = df96c['Ifast_minib0_deconv'].rolling(window=5, center=True).mean()
+df96c['Ifast_minib0_deconv_sm10'] = df96c['Ifast_minib0_deconv'].rolling(window=5, center=True).mean()
 df17c['Ifast_minib0_deconv_sm10'] = df17c['Ifast_minib0_deconv'].rolling(window=5, center=True).mean()
 
 df09 = cuts0910(df09c)
 df17 = cuts2017(df17c)
-# df96 = cuts9602(df96c)
+df96 = cuts9602(df96c)
+
 
 df09['Year'] = '0910'
 df17['Year'] = '2017'
-# df96['Year'] = '9602'
+df96['Year'] = '9602'
 
 # dfa = pd.concat([df09, df17, df96], ignore_index=True)
 dfa = pd.concat([df09, df17], ignore_index=True)
 
 # year = '2017'
-# year = '1998'
+# year = '0910'
+
+# year = '9602'
 year = '0910/2017'
 # df = dfa[dfa.Year == year]
+# df = df96
 df = dfa
 
 df['ADif'], df['RDif'] = cal_dif(df, 'IM', 'I_OPM_kom', 'ADif', 'RDif')
@@ -66,10 +70,14 @@ df['ADif_pre_cor'], df['RDif_pre_cor'] = cal_dif(df, 'PO3_cor', 'PO3_OPM', 'ADif
 
 prof = filter_rdif_all(df)
 
+prof[1].to_excel("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie0910_EN1010_file_crosscheck.xlsx")
 
+
+print('stop')
 slist = [0,1,2,3,4,5]
-# if year == '0910':slist = [0,1,3,4]
-# if year == '2017': slist = [0,2,4,5]
+if year == '0910':slist = [0,1,3,4]
+if year == '9602':slist = [0,1,3,4]
+if year == '2017': slist = [0,2,4,5]
 
 ls = len(slist)
 ls = 6
@@ -87,6 +95,7 @@ rdif = [0] *ls
 rdif_cor = [0] *ls
 rdif_pre_cor = [0] *ls
 y = [0] *ls
+yp = [0] *ls
 
 prdif = [0] *ls
 prdif_cor = [0] *ls
@@ -118,11 +127,6 @@ for i in slist:
     dft = prof[i][prof[i].pair_nan == 0]
     dfp = prof[i][prof[i].pair_nan == 0]
 
-    # dft['rdif_nan'] = 0
-    # dft.loc[dft.RDif_cor.isnull(), 'rdif_nan'] = 1
-    # dft = dft[dft.rdif_nan == 0]
-    # dft = dft.replace([np.inf, -np.inf], np.nan).dropna(axis=0)
-
     prdif[i] = np.array(dft['RDif'])
     prdif_cor[i] = np.array(dft['RDif_cor'])
     prdif_pre_cor[i] = np.array(dfp['RDif_pre_cor'])
@@ -141,10 +145,12 @@ for i in slist:
     rdif_pre_cor[i] = np.array(dfp[filt_p_pre]['RDif_pre_cor'])
 
     y[i] = np.array(dft[filt_p]['Pair'])
+    yp[i] = np.array(dfp[filt_p_pre]['Pair'])
+
     #fit using current
     res = stats.linregress(np.log10(y[i]), rdif_cor[i])
     #fit using po3_cor
-    res_pre = stats.linregress(np.log10(y[i]), rdif_pre_cor[i])
+    res_pre = stats.linregress(np.log10(yp[i]), rdif_pre_cor[i])
 
     for k in range(len(res)):
         coeff[i][k] = round(res[k],2)
@@ -191,11 +197,13 @@ if write_to_df:
     year = '2017'
     if year == '2017': slist = [0, 2, 4, 5]
     df = dfa[dfa.Year == year]
+    df['IminusiB1'] = df['IM'] - df['iB2']
+
 
     prof_cor = apply_calibration(df, coeff)
 
     df_cor = pd.concat([prof_cor[0], prof_cor[2], prof_cor[4], prof_cor[5]], ignore_index=True)
-    df_cor['ADif'], df_cor['RDif'] = cal_dif(df_cor, 'IM', 'I_OPM_kom', 'ADif', 'RDif')
+    df_cor['ADif'], df_cor['RDif'] = cal_dif(df_cor, 'IminusiB1', 'I_OPM_kom', 'ADif', 'RDif')
     df_cor['ADif_cor'], df_cor['RDif_cor'] = cal_dif(df_cor, 'Ifast_minib0_deconv_sm10', 'I_OPM_jma', 'ADif_cor', 'RDif_cor')
     df_cor['ADif_cal'], df_cor['RDif_cal'] = cal_dif(df_cor, 'I_corrected', 'I_OPM_jma', 'ADif_cal',
                                                                'RDif_cal')
@@ -207,15 +215,35 @@ if write_to_df:
     if year == '2017': slist = [0,2,4,5]
     df = dfa[dfa.Year == year ]
     # df = df96
+    df['IminusiB1'] = df['IM'] - df['iB1']
 
     prof_cor = apply_calibration(df, coeff)
 
     df_cor = pd.concat([prof_cor[0], prof_cor[1], prof_cor[3], prof_cor[4]], ignore_index=True)
-    df_cor['ADif'], df_cor['RDif'] = cal_dif(df_cor, 'IM', 'I_OPM_kom', 'ADif', 'RDif')
+    df_cor['ADif'], df_cor['RDif'] = cal_dif(df_cor, 'IminusiB1', 'I_OPM_kom', 'ADif', 'RDif')
     df_cor['ADif_cor'], df_cor['RDif_cor'] = cal_dif(df_cor, 'Ifast_minib0_deconv_sm10', 'I_OPM_jma', 'ADif_cor', 'RDif_cor')
     df_cor['ADif_cal'], df_cor['RDif_cal'] = cal_dif(df_cor, 'I_corrected', 'I_OPM_jma', 'ADif_cal',
                                                                'RDif_cal')
     df_cor.to_csv(f'/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie{year}_calibrated.csv')
+
+    ######
+    year = '9602'
+    slist = [0, 1, 3, 4]
+    if year == '2017': slist = [0, 2, 4, 5]
+    df = df96
+    df['IminusiB1'] = df['IM'] - df['iB1']
+
+    prof_cor = apply_calibration(df, coeff)
+
+    df_cor = pd.concat([prof_cor[0], prof_cor[1], prof_cor[3], prof_cor[4]], ignore_index=True)
+    df_cor['ADif'], df_cor['RDif'] = cal_dif(df_cor, 'IminusiB1', 'I_OPM_kom', 'ADif', 'RDif')
+    df_cor['ADif_cor'], df_cor['RDif_cor'] = cal_dif(df_cor, 'Ifast_minib0_deconv_sm10', 'I_OPM_jma', 'ADif_cor',
+                                                     'RDif_cor')
+    df_cor['ADif_cal'], df_cor['RDif_cal'] = cal_dif(df_cor, 'I_corrected', 'I_OPM_jma', 'ADif_cal',
+                                                     'RDif_cal')
+    df_cor.to_csv(f'/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie{year}_calibrated.csv')
+
+
 
 
 

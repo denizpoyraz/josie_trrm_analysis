@@ -3,6 +3,34 @@ import numpy as np
 
 from constant_variables import *
 
+def smooth_gaussian(time, ozcur, twindow, sigma):
+    n1 = 0
+    n2 = len(ozcur)
+    smooth = [0] * n2
+
+    for ir in range(0, n2):
+        timeir = time[ir]
+        id1 = np.argmin(abs(time - (timeir - twindow)))
+        id2 = np.argmin(abs(time - (timeir + twindow)))
+        # print('id1, id2')
+        # print(id1, id2)
+        ir1 = max(id1, n1)
+        ir2 = min(id2, n2 - 1)
+        # print('ir1, ir2')
+        # print(ir1, ir2)
+        expcoeffsum = 0
+        factor = 0
+        # hlp = 0
+        i = ir1
+        while i <= ir2:
+            hlp = np.exp(-((time[i]) - (timeir))**2 / (2 * (sigma ** 2)))
+            expcoeff = hlp * ozcur[i]
+            expcoeffsum = expcoeffsum + expcoeff
+            factor = factor + hlp
+            i = i + 1
+        smooth[ir] = 1 / factor * expcoeffsum
+
+    return smooth
 
 def calibrate_rdif(dft, bool_9602, bool_0910, bool_2017):
     
@@ -181,6 +209,36 @@ def convolution(df, variable1, variable2, tvariable, beta, boolib0, ecctype):
         return Islow, Islow_conv, Ifast, Ifast_deconv, Ifastminib0, Ifastminib0_deconv
     else:
         return Islow, Islow_conv, Ifast, Ifast_deconv
+    
+def convolution_df(df, variable1, variable2, tvariable, beta, ecctype):
+
+    if ecctype == 'SPC': tfast = tfast_spc
+    if ecctype == 'ENSCI': tfast = tfast_ecc
+
+    size = len(df)
+    Islow = [0]*size; Islow_conv = [0]*size; Ifastminib0 = [0]*size;  
+    Ifastminib0_deconv_out=[0]*size
+
+    for i in range(size - 1):
+
+        t1 = df.at[i + 1, tvariable]
+        t2 = df.at[i, tvariable]
+
+        Xs = np.exp(-(t1 - t2) / tslow)
+        Xf = np.exp(-(t1 - t2) / tfast)
+
+        Islow[i] = beta * df.at[i, variable1]
+        Islow[i + 1] = beta * df.at[i + 1, variable1]
+        Islow_conv[i + 1] =  Islow[i + 1] - (Islow[i + 1] - Islow_conv[i]) * Xs
+
+        Ifastminib0[i] = af * (df.at[i, variable2] - Islow_conv[i] - df.at[i, 'iB0'])
+        Ifastminib0[i + 1] = af * (df.at[i + 1, variable2] - Islow_conv[i + 1] - df.at[i + 1, 'iB0'])
+        Ifastminib0_deconv_out[i + 1] = (Ifastminib0[i + 1] - Ifastminib0[i] * Xf) / (1 - Xf)
+
+    df['Ifastminib0_deconv_out'] = Ifastminib0_deconv_out
+    return df['Ifastminib0_deconv_out']
+
+
 
 
 def convolution_specific_tau(df, variable1, variable2, tvariable, beta, boolib0, ecctype):
