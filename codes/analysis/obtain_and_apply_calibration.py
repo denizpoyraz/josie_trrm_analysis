@@ -25,18 +25,26 @@ def print_fit_variables(nametag, alist, alist_err, blist, blist_err):
     print('b_err=', blist_err)
 
 write_to_df = True
+bool_sm_vh = True
 
-df96c = pd.read_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie9602_deconv_2023paper.csv", low_memory=False)
+pre=''
+if bool_sm_vh: pre = '_sm_hv'
+df96c = pd.read_csv(f"/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie9602_deconv_2023paper{pre}.csv", low_memory=False)
 df96c = df96c[df96c.iB1 > -9]
 
-df17c = pd.read_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie2017_deconv_2023paper_ib2.csv", low_memory=False)
+df17c = pd.read_csv(f"/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie2017_deconv_2023paper_ib2{pre}.csv", low_memory=False)
 
-df09c = pd.read_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/"
-                    "Josie0910_deconv_2023_unitedpaper.csv",low_memory=False)
+df09c = pd.read_csv(f"/home/poyraden/Analysis/JOSIEfiles/Proccessed/"
+                    f"Josie0910_deconv_2023_unitedpaper{pre}.csv",low_memory=False)
+
 
 df09c['Ifast_minib0_deconv_sm10'] = df09c['Ifast_minib0_deconv_ib1_decay'].rolling(window=5, center=True).mean()
 df96c['Ifast_minib0_deconv_sm10'] = df96c['Ifast_minib0_deconv'].rolling(window=5, center=True).mean()
 df17c['Ifast_minib0_deconv_sm10'] = df17c['Ifast_minib0_deconv'].rolling(window=5, center=True).mean()
+if bool_sm_vh:
+    df09c['Ifast_minib0_deconv_sm10'] = df09c['Ifast_minib0_deconv_ib1_decay']
+    df96c['Ifast_minib0_deconv_sm10'] = df96c['Ifast_minib0_deconv']
+    df17c['Ifast_minib0_deconv_sm10'] = df17c['Ifast_minib0_deconv']
 
 df09 = cuts0910(df09c)
 df17 = cuts2017(df17c)
@@ -207,7 +215,7 @@ if write_to_df:
     df_cor['ADif_cor'], df_cor['RDif_cor'] = cal_dif(df_cor, 'Ifast_minib0_deconv_sm10', 'I_OPM_jma', 'ADif_cor', 'RDif_cor')
     df_cor['ADif_cal'], df_cor['RDif_cal'] = cal_dif(df_cor, 'I_corrected', 'I_OPM_jma', 'ADif_cal',
                                                                'RDif_cal')
-    df_cor.to_csv(f'/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie{year}_calibrated.csv')
+    df_cor.to_csv(f'/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie{year}_calibrated{pre}.csv')
 
     ######
     year = '0910'
@@ -224,7 +232,7 @@ if write_to_df:
     df_cor['ADif_cor'], df_cor['RDif_cor'] = cal_dif(df_cor, 'Ifast_minib0_deconv_sm10', 'I_OPM_jma', 'ADif_cor', 'RDif_cor')
     df_cor['ADif_cal'], df_cor['RDif_cal'] = cal_dif(df_cor, 'I_corrected', 'I_OPM_jma', 'ADif_cal',
                                                                'RDif_cal')
-    df_cor.to_csv(f'/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie{year}_calibrated.csv')
+    df_cor.to_csv(f'/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie{year}_calibrated{pre}.csv')
 
     ######
     year = '9602'
@@ -241,7 +249,7 @@ if write_to_df:
                                                      'RDif_cor')
     df_cor['ADif_cal'], df_cor['RDif_cal'] = cal_dif(df_cor, 'I_corrected', 'I_OPM_jma', 'ADif_cal',
                                                      'RDif_cal')
-    df_cor.to_csv(f'/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie{year}_calibrated.csv')
+    df_cor.to_csv(f'/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie{year}_calibrated{pre}.csv')
 
 
 

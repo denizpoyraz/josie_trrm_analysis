@@ -7,8 +7,8 @@ import numpy as np
 # this codes merges the output of make_beta_convoluted_preparation_data and make_beta_convoluted_data
 # the final df to use for Josie 0910 dataset
 
-df1 = pd.read_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie0910_Deconv_preparationadded_simulation_2023paper.csv",
-        low_memory=False)
+df1 = pd.read_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/"
+                  "Josie0910_Deconv_preparationadded_simulation_2023paper_sm_hv.csv",low_memory=False)
 df1 = df1[df1.ADX ==0]
 
 df1t = df1.drop_duplicates(['Team','Sim'])
@@ -18,7 +18,7 @@ df1 = df1[df1.Tsim_original >= 0]
 df1['Tsim'] = df1['Tsim_original'].copy()
 df1['Ifast_minib0_deconv'] = df1['Ifast_minib0_deconvo'].copy()
 
-df2 = pd.read_csv('/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie0910_deconv_2023_decay_added_147-149.csv')
+df2 = pd.read_csv('/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie0910_deconv_2023_decay_added_147-149_sm_hv.csv')
 df2 = df2[df2.ADX ==0]
 
 print('list df1', list(df1))
@@ -44,4 +44,4 @@ df2c = df2[['Sim','Team', 'iB0', 'iB1', 'iB2', 'ENSCI', 'Sol', 'ADX','Buf','PO3'
             'Ifast_minib0_deconv', 'Ifast_minib0_deconv_ib1_decay','Ifast_minib0', 'Ifast_minib0_ib1_decay','Islow_conv']].copy()
 
 df_0910_final = pd.concat([df1c, df2c], ignore_index=True)
-df_0910_final.to_csv('/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie0910_deconv_2023_unitedpaper.csv')
+df_0910_final.to_csv('/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie0910_deconv_2023_unitedpaper_sm_hv.csv')

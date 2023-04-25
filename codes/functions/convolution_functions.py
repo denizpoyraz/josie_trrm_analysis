@@ -3,34 +3,24 @@ import numpy as np
 
 from constant_variables import *
 
-def smooth_gaussian(time, ozcur, twindow, sigma):
-    n1 = 0
-    n2 = len(ozcur)
-    smooth = [0] * n2
 
-    for ir in range(0, n2):
+def smooth_gaussian(dff, vtime, vozcur, twindow, sigma):
+
+    time = np.array(dff[vtime])
+    ozcur = np.array(dff[vozcur])
+    n = len(dff)
+    smooth = np.zeros(n)
+
+    for ir in range(n):
         timeir = time[ir]
-        id1 = np.argmin(abs(time - (timeir - twindow)))
-        id2 = np.argmin(abs(time - (timeir + twindow)))
-        # print('id1, id2')
-        # print(id1, id2)
-        ir1 = max(id1, n1)
-        ir2 = min(id2, n2 - 1)
-        # print('ir1, ir2')
-        # print(ir1, ir2)
-        expcoeffsum = 0
-        factor = 0
-        # hlp = 0
-        i = ir1
-        while i <= ir2:
-            hlp = np.exp(-((time[i]) - (timeir))**2 / (2 * (sigma ** 2)))
-            expcoeff = hlp * ozcur[i]
-            expcoeffsum = expcoeffsum + expcoeff
-            factor = factor + hlp
-            i = i + 1
-        smooth[ir] = 1 / factor * expcoeffsum
+        ir1 = np.searchsorted(time, timeir - twindow, side='left')
+        ir2 = np.searchsorted(time, timeir + twindow, side='right')
+        expcoeffsum = np.sum(np.exp(-((time[ir1:ir2+1] - timeir)**2) / (2 * (sigma ** 2))) * ozcur[ir1:ir2+1])
+        factor = np.sum(np.exp(-((time[ir1:ir2+1] - timeir)**2) / (2 * (sigma ** 2))))
+        smooth[ir] = expcoeffsum / factor
+    dff['tmp'] = smooth
 
-    return smooth
+    return dff['tmp']
 
 def calibrate_rdif(dft, bool_9602, bool_0910, bool_2017):
     

@@ -1,35 +1,31 @@
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-# from functions.convolution_functions import convolution, convolution_test, smooth_and_convolute, convolution_islow0
-from homogenization_functions import pumpflow_efficiency,return_phipcor, VecInterpolate_log
-from convolution_functions import convolution,convolution_islow0
+from convolution_functions import convolution,convolution_islow0, smooth_gaussian
 from constant_variables import *
 
-# now use this beta values * 0.1 for the deconvolution of the signal and make a DF
-
+#update of the code 25/04 for HV smoothing
 beta_spe = False
 bool_9602 = True
 bool_0910_decay = False
 bool_2017 = False
+bool_sm_hv = True
 
 year = '9602'
-file_out = f'Josie{year}_deconv_2023paper.csv'
-if bool_0910_decay:file_out = 'Josie0910_deconv_2023_decay_added_147-149.csv'
+pre = ''
+if bool_sm_hv: pre = '_sm_hv'
+
+file_out = f'Josie{year}_deconv_2023paper{pre}.csv'
+if bool_0910_decay:file_out = f'Josie0910_deconv_2023_decay_added_147-149{pre}.csv'
 df = pd.read_csv(f"/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie{year}_Data_2023paper.csv", low_memory=False)
 if bool_2017:
     df = pd.read_csv(f"/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie{year}_Data_2023paper_ib2.csv", low_memory=False)
-    file_out = f'Josie{year}_deconv_2023paper_ib2.csv'
+    file_out = f'Josie{year}_deconv_2023paper_ib2{pre}.csv'
 
 ####            #######             ########
 
 if bool_0910_decay:
     df = df[(df.Sim > 146) & (df.Sim < 150)]
 
-
-
-# Josie9602_Data_updjma
-df['TS'] = pd.to_datetime(df.Tsim, unit='s')
 
 df['IMminusIB0'] = df['IM'] - df['iB0']
 
@@ -41,6 +37,7 @@ ensci = np.asarray(df.drop_duplicates(['Sim', 'Team'])['ENSCI'])
 
 dft = {}
 list_data = []
+
 
 for j in range(len(simlist)):
 
@@ -61,8 +58,14 @@ for j in range(len(simlist)):
 
     if ensci[j] == 0:
         sondestr = 'SPC'
+        tfast = tfast_spc
     else:
         sondestr = 'ENSCI'
+        tfast = tfast_ecc
+
+
+    sigma = 0.2 * tfast
+    timew = 3 * sigma
 
     if sol[j] == 2.0: solstr = '2p0'
     if sol[j] == 1.0: solstr = '1p0'
@@ -79,18 +82,23 @@ for j in range(len(simlist)):
     # print(title)
 
     dft[j] = df[(df.Sim == simlist[j]) & (df.Team == teamlist[j])]
-    ### for data of every 12 seconds
-    # dft[j] = dft[j].resample('12S', on='TS').mean().interpolate()
-    # df = df.reset_index()
+
     dft[j] = dft[j].reset_index()
     if beta_spe:
         beta = dft[j].loc[0, 'beta']
     # print(title, beta)
 
     if bool_9602: dft[j]['TPext'] = dft[j]['TPint']
+    #update everthing to HV smoothed IM
+
+    dft[j]['IM_gsm'] = smooth_gaussian(dft[j], 'Tsim', 'IM', timew, sigma)
+    dft[j]['IMminusIB0_gsm'] = smooth_gaussian(dft[j], 'Tsim', 'IMminusIB0', timew, sigma)
 
     Islow, Islow_conv, Ifast, Ifast_deconv, Ifastminib0, Ifastminib0_deconv = \
         convolution(dft[j], 'IMminusIB0', 'IM', 'Tsim', beta, 1, sondestr)
+    if bool_sm_hv:
+        Islow, Islow_conv, Ifast, Ifast_deconv, Ifastminib0, Ifastminib0_deconv = \
+            convolution(dft[j], 'IMminusIB0_gsm', 'IM_gsm', 'Tsim', beta, 1, sondestr)
 
 
     if bool_0910_decay:
@@ -101,6 +109,9 @@ for j in range(len(simlist)):
 
             Islow_ib1_decay, Islow_conv_ib1_decay, Ifast_ib1_decay, Ifast_deconv_ib1_decay, Ifastminib0_ib1_decay, Ifastminib0_deconv_ib1_decay = \
                 convolution_islow0(dft[j], iB1_var, 'IMminusIB0', 'IM', 'Tsim', beta, 1, sondestr)
+            if bool_sm_hv:
+                Islow_ib1_decay, Islow_conv_ib1_decay, Ifast_ib1_decay, Ifast_deconv_ib1_decay, Ifastminib0_ib1_decay, Ifastminib0_deconv_ib1_decay = \
+                convolution_islow0(dft[j], iB1_var, 'IMminusIB0_gsm', 'IM_gsm', 'Tsim', beta, 1, sondestr)
 
             dft[j]['I_slow_ib1_decay'] = Islow_ib1_decay
             dft[j]['I_slow_conv_ib1_decay'] = Islow_conv_ib1_decay
@@ -118,25 +129,16 @@ for j in range(len(simlist)):
 
     if bool_0910_decay:
         dft[j]['Ifast_minib0_deconv_sm10'] = dft[j]['Ifast_minib0_deconv_ib1_decay'].rolling(window=5, center=True).mean()
+        if bool_sm_hv:
+            dft[j]['Ifast_minib0_deconv_sm10'] = dft[j]['Ifast_minib0_deconv_ib1_decay']
     if not bool_0910_decay:
         dft[j]['Ifast_minib0_deconv_sm10'] = dft[j]['Ifast_minib0_deconv'].rolling(window=5, center=True).mean()
-
+        if bool_sm_hv:
+            dft[j]['Ifast_minib0_deconv_sm10'] = dft[j]['Ifast_minib0_deconv']
 
 
     list_data.append(dft[j])
 
 df_dc = pd.concat(list_data, ignore_index=True)
 
-# df_dc.to_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie2017_deconv_updjma.csv")
 df_dc.to_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/" + file_out)
-# df_dc.to_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie9602_deconv_updjma.csv")
-
-
-# O3, O3_tot_opm = calculate_totO3OPM_var(dft[j], 'PO3_jma')
-    # O3_deconv, O3_tot_opm = calculate_totO3OPM_var(dft[j], 'PO3_deconv_jma')
-    # O3_deconv_sm, O3_tot_opm = calculate_totO3OPM_var(dft[j], 'PO3_deconv_jma_sm')
-    #
-    # dft[j]['tot_O3'] = O3
-    # dft[j]['tot_O3_deconv'] = O3_deconv
-    # dft[j]['O3_deconv_sm'] = O3_deconv_sm
-    # dft[j]['tot_OPM'] = O3_tot_opm

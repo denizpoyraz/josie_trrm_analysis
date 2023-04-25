@@ -16,8 +16,11 @@ warnings.filterwarnings("ignore")
 #plot style variables#
 size_label =22
 size_title =24
+bool_sm_vh = True
+pre=''
+if bool_sm_vh: pre = '_sm_hv'
 
-df0910t = pd.read_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie0910_calibrated.csv", low_memory=False)
+df0910t = pd.read_csv(f"/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie0910_calibrated{pre}.csv", low_memory=False)
 
 df0910 = df0910t.drop(['Unnamed: 0.1', 'index', 'Tact', 'Tair', 'Tinlet', 'TPint', 'I_Pump', 'VMRO3', 'VMRO3_OPM',
  'ADif_PO3S', 'RDif_PO3S','Z', 'Header_Team', 'Header_Sim', 'Header_PFunc', 'Header_PFcor',
@@ -25,12 +28,12 @@ df0910 = df0910t.drop(['Unnamed: 0.1', 'index', 'Tact', 'Tair', 'Tinlet', 'TPint
  'SondeAge', 'Solutions', 'Volume_Cathode', 'ByPass_Cell', 'Current_10min_after_noO3', 'Resp_Time_4_1p5_sec',
 'RespTime_1minOver2min', 'Final_BG', 'T100', 'mlOvermin', 'T100_post', 'mlOverminp1', 'RespTime_4_1p5_sec_p1','RespTime_1minOver2min_microamps', 'PostTestSolution_Lost_gr', 'PumpMotorCurrent', 'PumpMotorCurrent_Post',
  'PF_Unc', 'PF_Cor', 'BG', 'plog', 'Tcell', 'TcellC','Pw', 'massloss', 'Tboil', 'total_massloss', 'I_conv_slow',
-                      'I_conv_slow_komhyr', 'TS'], axis=1)
+                      'I_conv_slow_komhyr'], axis=1)
 
 print(list(df0910))
-df17 = pd.read_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie2017_calibrated.csv", low_memory=False)
+df17 = pd.read_csv(f"/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie2017_calibrated{pre}.csv", low_memory=False)
 df17 = df17[df17.iB2 >= 0]
-df9602 = pd.read_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie9602_calibrated.csv", low_memory=False)
+df9602 = pd.read_csv(f"/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie9602_calibrated{pre}.csv", low_memory=False)
 df17['Year'] = '2017'
 df0910['Year'] = '0910'
 df9602['Year'] = '9602'
@@ -46,27 +49,27 @@ bool_current = False
 # year = '9602'
 # year_title = '1996/1998/200/2002'
 # pyear = "9602"
-year = '0910'
+# year = '0910'
 year = '0910'
 year_title = '2009/2010'
 pyear = "0910"
 #
 df = df0910
 slist = [0,1,3,4]
-pre1 = 'fig7_'
-pre2 = 'fig11_'
+pre1 = f'fig7_{pre}_'
+pre2 = f'fig11_{pre}_'
 
 if year == '2017':
     slist = [0,2,4,5]
     df = df17
     df = df[df.iB2 >= 0 ]
-    pre1 = 'fig8_'
-    pre2 = 'fig12_'
+    pre1 = f'fig8_{pre}_'
+    pre2 = f'fig12_{pre}_'
 
 if year == '9602':
     df = df9602
-    pre1 = 'fig10_'
-    pre2 = 'fig13_'
+    pre1 = f'fig10_{pre}_'
+    pre2 = f'fig13_{pre}_'
 
 
 if year == 'all':
@@ -74,8 +77,8 @@ if year == 'all':
     year_title = '2009/2010/2017'
     pyear = "0910-2017"
     slist = [0, 1, 2,3, 4, 5]
-    pre1 = 'fig9_'
-    pre2 = 'fig12_'
+    pre1 = f'fig9_{pre}_'
+    pre2 = f'fig12_{pre}_'
 
 if bool_current:
 
@@ -122,7 +125,7 @@ if not bool_current:
     df['ADif_cal'], df['RDif_cal'] = cal_dif(df, 'PO3_cal', 'PO3_OPM', 'ADif_cal',
                                              'RDif_cal')
     profl = filter_rdif_all(df)
-    print(profl[1])
+    # print(profl[1])
 
 
     adif_IM, adif_IM_err, rdif_IM, rdif_IM_err, Yp = Calc_average_Dif_yref(profl, 'PO3_dqa', 'PO3_OPM', 'pressure', yref)
@@ -131,7 +134,7 @@ if not bool_current:
     adif_IM_cal, adif_IM_cal_err, rdif_IM_cal, rdif_IM_cal_err, Ypc = \
         Calc_average_Dif_yref(profl, 'PO3_cal', 'PO3_OPM', 'pressure', yref)
 
-profl[1].to_excel("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie0910_EN1010_file.xlsx")
+# profl[1].to_excel("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie0910_EN1010_file.xlsx")
 print('end')
 
 nsim = [0] * 6
@@ -162,19 +165,40 @@ for k in slist:
         a_year[k] = a_0910[k]
         b_year[k] = b_0910[k]
         labelc[k] = b_0910[k]
+        if bool_sm_vh:
+            a_year[k] = a_0910_smhv[k]
+            b_year[k] = b_0910_smhv[k]
+            labelc[k] = b_0910_smhv[k]
+
 
     if pyear == '2017':
         a_year[k] = a_2017[k]
         b_year[k] = b_2017[k]
         labelc[k] = b_2017[k]
+        if bool_sm_vh:
+            a_year[k] = a_2017_smhv[k]
+            b_year[k] = b_2017_smhv[k]
+            labelc[k] = b_2017_smhv[k]
+
     if pyear == '9602':
         a_year[k] = a_9602[k]
         b_year[k] = b_9602[k]
         labelc[k] = b_9602[k]
+        if bool_sm_vh:
+            a_year[k] = a_9602_smhv[k]
+            b_year[k] = b_9602_smhv[k]
+            labelc[k] = b_9602_smhv[k]
+
+
     if  pyear == "0910-2017":
         a_year[k] = a[k]
         b_year[k] = b[k]
         labelc[k] = b[k]
+        if bool_sm_vh:
+            a_year[k] = a_smhv[k]
+            b_year[k] = b_smhv[k]
+            labelc[k] = b_smhv[k]
+
 
 
     if b_year[k] < 0:
@@ -261,9 +285,9 @@ for k in slist:
     ax1.axvline(x=0, color='grey', linestyle='--', linewidth=3)
     plt.grid(True)
 
-    # plt.savefig(f'/home/poyraden/Analysis/JosieAnalysis/Plots/Plots_2023_final/v3/png/{plotname}{ffile}.png')
-    # plt.savefig(f'/home/poyraden/Analysis/JosieAnalysis/Plots/Plots_2023_final/v3/eps/{plotname}{ffile}.eps')
-    # plt.savefig(f'/home/poyraden/Analysis/JosieAnalysis/Plots/Plots_2023_final/v3/pdf/{plotname}{ffile}.pdf')
+    plt.savefig(f'/home/poyraden/Analysis/JosieAnalysis/Plots/Plots_2023_final/v3/png/{plotname}{ffile}.png')
+    plt.savefig(f'/home/poyraden/Analysis/JosieAnalysis/Plots/Plots_2023_final/v3/eps/{plotname}{ffile}.eps')
+    plt.savefig(f'/home/poyraden/Analysis/JosieAnalysis/Plots/Plots_2023_final/v3/pdf/{plotname}{ffile}.pdf')
     plt.show()
 
     plt.close()
@@ -325,10 +349,10 @@ for k in slist:
 
     # plt.tight_layout()
 
-    # plt.savefig(f'/home/poyraden/Analysis/JosieAnalysis/Plots/Plots_2023_final/v3/png/{plotname}{ffile}.png')
-    # plt.savefig(f'/home/poyraden/Analysis/JosieAnalysis/Plots/Plots_2023_final/v3/eps/{plotname}{ffile}.eps')
-    # plt.savefig(f'/home/poyraden/Analysis/JosieAnalysis/Plots/Plots_2023_final/v3/pdf/{plotname}{ffile}.pdf')
-    # plt.show()
+    plt.savefig(f'/home/poyraden/Analysis/JosieAnalysis/Plots/Plots_2023_final/v3/png/{plotname}{ffile}.png')
+    plt.savefig(f'/home/poyraden/Analysis/JosieAnalysis/Plots/Plots_2023_final/v3/eps/{plotname}{ffile}.eps')
+    plt.savefig(f'/home/poyraden/Analysis/JosieAnalysis/Plots/Plots_2023_final/v3/pdf/{plotname}{ffile}.pdf')
+    plt.show()
 
     plt.close()
 ##################################################################################################################

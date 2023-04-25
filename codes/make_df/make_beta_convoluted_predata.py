@@ -1,11 +1,14 @@
 import pandas as pd
-from convolution_functions import convolution, convolution_islow0
+from convolution_functions import convolution, convolution_islow0, smooth_gaussian
 from constant_variables import *
 
 
+bool_sm_hv = True
 
-# df = pd.read_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie0910_preparationadded_updjma.csv", low_memory=False)
 df = pd.read_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie0910_preparationadded_2023paper.csv", low_memory=False)
+
+pre = ''
+if bool_sm_hv: pre = '_sm_hv'
 
 df['PF'] = df['PFcor']
 df['TS'] = pd.to_datetime(df.Tsim, unit='s')
@@ -23,7 +26,6 @@ sol = np.asarray(df.drop_duplicates(['Sim', 'Team'])['Sol'].tolist())
 buff = np.asarray(df.drop_duplicates(['Sim', 'Team'])['Buf'])
 ensci = np.asarray(df.drop_duplicates(['Sim', 'Team'])['ENSCI'])
 
-# teamlist = [1,2,3,4]
 
 print(simlist, teamlist)
 
@@ -54,9 +56,10 @@ for j in range(len(simlist)):
 
     if ensci[j] == 0:
         sondestr = 'SPC'
+        tfast = tfast_spc
     else:
         sondestr = 'ENSCI'
-
+        tfast = tfast_ecc
 
     if sol[j] == 2.0: solstr = '2p0'
     if sol[j] == 1.0: solstr = '1p0'
@@ -65,6 +68,9 @@ for j in range(len(simlist)):
     if buff[j] == 0.1: bufstr = '0p1'
     if buff[j] == 0.5: bufstr = '0p5'
     if buff[j] == 1.0: bufstr = '1p0'
+    
+    sigma = 0.2 * tfast
+    timew = 3 * sigma
 
     title = str(simlist[j]) + '_' + str(teamlist[j]) + '_' + adxstr + sondestr + solstr + '-' + bufstr + 'B'
     type = sondestr + ' ' + str(sol[j]) + '\% - ' + str(buff[j]) + 'B'
@@ -75,9 +81,6 @@ for j in range(len(simlist)):
     dft[j] = df[(df.Sim == simlist[j]) & (df.Team == teamlist[j])]
     dfto[j] = df[(df.Sim == simlist[j]) & (df.Team == teamlist[j]) & (df.TimeTag == 'Sim')]
 
-    ### for data of every 12 seconds
-    # dft[j] = dft[j].resample('12S', on='TS').mean().interpolate()
-    # df = df.reset_index()
     dft[j] = dft[j].reset_index(drop=True)
     dfto[j] = dfto[j].reset_index(drop=True)
 
@@ -120,21 +123,38 @@ for j in range(len(simlist)):
     iB1_var = (dft[j].at[0, 'iB1'] - dft[j].at[0, 'iB0']) * np.exp(-decay_time / (25 * 60))
     test_var = (dft[j].at[0, 'iB1'] - dft[j].at[0, 'iB0'])
 
+    dft[j]['IM_gsm'] = smooth_gaussian(dft[j], 'Tsim', 'IM', timew, sigma)
+    dft[j]['IMminusIB0_gsm'] = smooth_gaussian(dft[j], 'Tsim', 'IMminusIB0', timew, sigma)
+    
+    dfto[j]['IM_gsm'] = smooth_gaussian(dfto[j], 'Tsim_original', 'IM', timew, sigma)
+    dfto[j]['IMminusIB0_gsm'] = smooth_gaussian(dfto[j], 'Tsim_original', 'IMminusIB0', timew, sigma)
 
     Islow, Islow_conv, Ifast, Ifast_deconv, Ifastminib0, Ifastminib0_deconv = convolution(dft[j], 'IMminusIB0', 'IM',
                                                                                           'Tsim', beta, 1, sondestr)
     Islowo, Islow_convo, Ifasto, Ifast_deconvo, Ifastminib0o, Ifastminib0_deconvo = convolution(dfto[j], 'IMminusIB0',
                                                                                                 'IM', 'Tsim_original',
                                                                                                 beta, 1, sondestr)
+    if bool_sm_hv:
+        Islow, Islow_conv, Ifast, Ifast_deconv, Ifastminib0, Ifastminib0_deconv = \
+            convolution(dft[j], 'IMminusIB0_gsm', 'IM_gsm','Tsim', beta, 1, sondestr)
+        Islowo, Islow_convo, Ifasto, Ifast_deconvo, Ifastminib0o, Ifastminib0_deconvo = \
+            convolution(dfto[j], 'IMminusIB0_gsm','IM_gsm', 'Tsim_original', beta, 1, sondestr)
+        
 
     Islow_ib1_decay, Islow_conv_ib1_decay, Ifast_ib1_decay, Ifast_deconv_ib1_decay, Ifastminib0_ib1_decay, Ifastminib0_deconv_ib1_decay = \
         convolution_islow0(dfto[j], iB1_var, 'IMminusIB0', 'IM', 'Tsim_original', beta, 1, sondestr)
-
     Islow_ib1_test, Islow_conv_ib1_test, Ifast_ib1_test, Ifast_deconv_ib1_test, Ifastminib0_ib1_test, Ifastminib0_deconv_ib1_test = \
         convolution_islow0(dfto[j], test_var, 'IMminusIB0', 'IM', 'Tsim_original', beta, 1, sondestr)
-
     Islow_ib1_decay_all, Islow_conv_ib1_decay_all, Ifast_ib1_decay_all, Ifast_deconv_ib1_decay_all, Ifastminib0_ib1_decay_all, Ifastminib0_deconv_ib1_decay_all = \
         convolution_islow0(dft[j], iB1_var, 'IMminusIB0', 'IM', 'Tsim', beta, 1, sondestr)
+
+    if bool_sm_hv:
+        Islow_ib1_decay, Islow_conv_ib1_decay, Ifast_ib1_decay, Ifast_deconv_ib1_decay, Ifastminib0_ib1_decay, Ifastminib0_deconv_ib1_decay = \
+            convolution_islow0(dfto[j], iB1_var, 'IMminusIB0_gsm', 'IM_gsm', 'Tsim_original', beta, 1, sondestr)
+        Islow_ib1_test, Islow_conv_ib1_test, Ifast_ib1_test, Ifast_deconv_ib1_test, Ifastminib0_ib1_test, Ifastminib0_deconv_ib1_test = \
+            convolution_islow0(dfto[j], test_var, 'IMminusIB0_gsm', 'IM_gsm', 'Tsim_original', beta, 1, sondestr)
+        Islow_ib1_decay_all, Islow_conv_ib1_decay_all, Ifast_ib1_decay_all, Ifast_deconv_ib1_decay_all, Ifastminib0_ib1_decay_all, Ifastminib0_deconv_ib1_decay_all = \
+            convolution_islow0(dft[j], iB1_var, 'IMminusIB0_gsm', 'IM_gsm', 'Tsim', beta, 1, sondestr)
 
     dft[j]['i_at_timeib1'] = i_at_timeib1
     dft[j]['time_ib1'] = time_ib1
@@ -194,6 +214,6 @@ for j in range(len(simlist)):
 df_dc = pd.concat(list_data, ignore_index=True)
 df_o = pd.concat(list_data_original, ignore_index=True)
 
-df_dc.to_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie0910_Deconv_preparationadded_all_2023paper.csv")
-df_o.to_csv("/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie0910_Deconv_preparationadded_simulation_2023paper.csv")
+df_dc.to_csv(f"/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie0910_Deconv_preparationadded_all_2023paper{pre}.csv")
+df_o.to_csv(f"/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie0910_Deconv_preparationadded_simulation_2023paper{pre}.csv")
 
