@@ -69,10 +69,7 @@ size_label = 28
 size_title = 32
 size_tick = 24
 size_legend = 24
-# size_label = 22
-# size_title = 30
-# size_tick = 22
-# size_legend = 20
+
 ilist = [0, 1, 3, 4]
 # labellist = ['EN-SCI/SST0.5', 'EN-SCI/SST1.0', 'EN-SCI/SST0.1','SPC/SST0.5', 'SPC/SST1.0', 'SPC/SST0.1']
 
