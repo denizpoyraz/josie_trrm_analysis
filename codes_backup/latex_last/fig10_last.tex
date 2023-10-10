@@ -1,0 +1,30 @@
+%! Author = poyraden
+%! Date = 18/09/2023
+
+\documentclass{memoir}
+
+\usepackage{tikz,siunitx,mwe}
+\usepackage{subcaption}
+\newsubfloat{figure}
+
+\newcommand{\scalebarimg}[6]{
+  \begin{tikzpicture}
+    \draw node[name=micrograph] {\includegraphics[width=#2\textwidth]{#1}}; %I fetch the image
+    \draw[ultra thick,#6] (micrograph.south west)++(0.03*0#2\textwidth,0.035*0#2\textwidth)--++(#2*#3\textwidth,0)node[above,midway]
+    {#4 \si{\micro\meter}}; %I draw the scalebar
+    \draw  (micrograph.north west)  node[anchor=north west,yshift=-1,#6]{\textbf{\small{#5}}}; %I draw the image label
+  \end{tikzpicture}
+}
+
+\begin{document}
+\begin{figure}
+   {\phantomsubcaption\label{fig:one}
+   \scalebarimg{example-image}{.45}{0.33933}{50}{\subref{fig:one}}{black}}
+   {\phantomsubcaption\label{fig:two}
+   \scalebarimg{example-image}{.45}{0.33933}{50}{\subref{fig:two}}{black}}
+\caption{Figures (a) and (b) should not be doubly labeled.}
+\end{figure}
+
+See Figure~\ref{fig:one} and \subcaptionref{fig:two}.
+
+\end{document}

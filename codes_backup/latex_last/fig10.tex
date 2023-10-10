@@ -1,0 +1,92 @@
+%%
+%
+%
+%
+%
+%% Create subfigures in LaTeX
+%\documentclass{article}
+%
+%\usepackage{subcaption}
+%\usepackage{graphicx}
+%
+%\begin{document}
+%
+%\begin{figure}
+%        \captionsetup[subfigure]{font=Large}
+%
+%%\centering
+%\begin{subfigure}{0.3\textwidth}
+%    \includegraphics[width=\textwidth]{png/profile_unc__sm_hv_0910_TRRM_SPC1010}
+%%    \caption{Firts subfigure.}
+%%    \label{fig:first}
+%\end{subfigure}
+%\hspace{-2cm}
+%\begin{subfigure}{0.3\textwidth}
+%    \includegraphics[width=\textwidth]{png/relative_corrections_unc__sm_hv_0910_TRRM_SPC1010}
+%%    \caption{Second subfigure.}
+%%    \label{fig:second}
+%\end{subfigure}
+%\hspace{-2cm}
+%
+%\begin{subfigure}{0.3\textwidth}
+%    \includegraphics[width=\textwidth]{png/relative_corrections_unc__sm_hv_0910_TRRM_EN0505}
+%%    \caption{Third subfigure.}
+%%    \label{fig:third}
+%\end{subfigure}
+%
+%
+%\end{figure}
+%
+%\end{document}
+
+%
+%
+\documentclass[twocolumn]{article}
+\usepackage{graphicx}
+\usepackage{subfig}
+\usepackage{lipsum}
+
+%\captionsetup{skip=<15mm}
+%\captionsetup[subfloat]{captionskip=40pt}
+\begin{document}
+%    \section{Introduction}
+%    \lipsum[1-5]
+    \thispagestyle{empty}
+    \begin{figure*}[t!]
+        \captionsetup[subfigure]{font=Large}
+
+        \subfloat[]{%
+            \includegraphics[width=.408\linewidth]{png/output1.png}%
+        }
+%        \hspace{-1mm}
+        \subfloat[]{%
+            \includegraphics[width=.35\linewidth]{png/output3.png}%
+            \label{subfig:b}%
+        }
+%        \hspace{-5mm}
+        \subfloat[]{%
+            \includegraphics[width=.35\linewidth]{png/output2.png}%
+            \label{subfig:c}%
+        }
+        \vspace{-1mm}
+%        \subfloat[]{%
+%            \includegraphics[width=.35\linewidth]{png/profile_unc__sm_hv_2017_TRRM_SPC1010}%
+%            \label{subfig:d}%
+%        }
+%        \hspace{-5mm}
+%        \subfloat[]{%
+%            \includegraphics[width=.35\linewidth]{png/relative_corrections_unc__sm_hv_2017_TRRM_SPC1010}%
+%            \label{subfig:e}%
+%        }
+%                \hspace{-5mm}
+%
+%        \subfloat[]{%
+%            \includegraphics[width=.35\linewidth]{png/relative_corrections_unc__sm_hv_2017_TRRM_EN0505}%
+%            \label{subfig:f}%
+%        }
+%        \hspace{0mm}
+%        \caption{Caption}
+        \label{fig:fig}
+    \end{figure*}
+\end{document}
+

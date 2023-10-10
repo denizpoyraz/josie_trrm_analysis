@@ -1,0 +1,44 @@
+
+
+
+\documentclass[twocolumn]{article}
+\usepackage{graphicx}
+\usepackage{subfig}
+\usepackage{lipsum}
+
+%\captionsetup{skip=<15mm}
+%\captionsetup[subfloat]{captionskip=40pt}
+\begin{document}
+%    \section{Introduction}
+%    \lipsum[1-5]
+    \thispagestyle{empty}
+    \begin{figure*}[t!]
+                \captionsetup[subfigure]{font=Large}
+
+        \subfloat[]{%
+            \includegraphics[width=.63\linewidth]{png/v2_RDif_fig10__sm_hv_9602_SPC1010_Scatter_pressure}%
+
+%            \label{subfig:a}%
+        }
+        \hspace{-9mm}
+        \subfloat[]{%
+            \includegraphics[width=.63\linewidth]{png/v2_RDif_fig10__sm_hv_9602_EN0505_Scatter_pressure}%
+            \label{subfig:b}%
+        }
+        \vspace{-1mm}
+        \subfloat[]{%
+            \includegraphics[width=.63\linewidth]{png/v2_RDif_fig10__sm_hv_9602_SPC0505_Scatter_pressure}%
+            \label{subfig:c}%
+        }
+        \hspace{-9mm}
+        \subfloat[]{%
+            \includegraphics[width=.63\linewidth]{png/v2_RDif_fig10__sm_hv_9602_EN1010_Scatter_pressure}%
+            \label{subfig:d}%
+        }
+                        \vspace{-1mm}
+
+%        \caption{Caption}
+        \label{fig:fig}
+    \end{figure*}
+\end{document}
+

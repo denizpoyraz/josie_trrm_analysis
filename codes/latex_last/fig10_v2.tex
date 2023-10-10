@@ -1,0 +1,20 @@
+\documentclass{revtex4-1}% http://ctan.org/pkg/ltxutil
+\usepackage{graphicx}% http://ctan.org/pkg/graphicx
+\newcommand{\subfigimg}[3][,]{%
+  \setbox1=\hbox{\includegraphics[#1]{#3}}% Store image in box
+  \leavevmode\rlap{\usebox1}% Print image
+  \rlap{\hspace*{10pt}\raisebox{\dimexpr\ht1-2\baselineskip}{#2}}% Print label
+  \phantom{\usebox1}% Insert appropriate spcing
+}
+\begin{document}
+\begin{figure}
+  \centering
+%  \begin{tabular}{@{}p{0.35\linewidth}@{\quad}p{0.35\linewidth}@{}}
+    \subfigimg[width=\linewidth]{A)}{example-image-a} &
+    \subfigimg[width=\linewidth]{B)}{example-image-b} &
+    \subfigimg[width=\linewidth]{C)}{example-image-c} &
+    \subfigimg[width=\linewidth]{D)}{example-image-a}
+%  \end{tabular}
+  \caption{A caption}
+\end{figure}
+\end{document}

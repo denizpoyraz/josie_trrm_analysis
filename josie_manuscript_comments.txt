@@ -1,0 +1,12 @@
+Section 2.4:
+
+1) What if we only use I and not U in 8-9. We can say here I refers to the U from Miloshevich paper.
+
+2) wait and see if Ia is explained somewhere
+
+Section 3.2:
+more than 16 1/e ?
+
+Section 4:
+
+What if we use TRRM method rather than "new" for referring to the TRRM proccessed plots/figures etc...

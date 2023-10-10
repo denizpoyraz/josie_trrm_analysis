@@ -1,0 +1,54 @@
+
+
+
+\documentclass[twocolumn]{article}
+\usepackage{graphicx}
+\usepackage{subfig}
+\usepackage{lipsum}
+
+%\captionsetup{skip=<15mm}
+%\captionsetup[subfloat]{captionskip=40pt}
+\begin{document}
+%    \section{Introduction}
+%    \lipsum[1-5]
+    \thispagestyle{empty}
+%    \begin{figure*}[t!]
+        \begin{figure*}
+
+                \captionsetup[subfigure]{font=Large}
+
+        \subfloat[]{%
+            \includegraphics[width=.5\linewidth]{png/fig12_conventional2672019}%
+
+%            \label{subfig:a}%
+        }
+        \hspace{-9mm}
+        \subfloat[]{%
+            \includegraphics[width=.5\linewidth]{png/fig12_trrm_sm102672019}%
+            \label{subfig:b}%
+        }
+        \vspace{-2mm}
+        \subfloat[]{%
+            \includegraphics[width=.5\linewidth]{png/fig12_conventionalSamoa17-07-2020}%
+            \label{subfig:c}%
+        }
+        \hspace{-9mm}
+        \subfloat[]{%
+            \includegraphics[width=.5\linewidth]{png/fig12_trrmSamoa17-07-2020}%
+            \label{subfig:d}%
+        }
+         \vspace{-2mm}
+        \subfloat[]{%
+            \includegraphics[width=.5\linewidth]{png/fig12_conventionalSouthPole01-10-2020}%
+            \label{subfig:e}%
+        }
+%        \hspace{-5mm}
+        \subfloat[]{%
+            \includegraphics[width=.5\linewidth]{png/fig12_trrmSouthPole01-10-2020}%
+            \label{subfig:f}%
+        }
+%        \caption{Caption}
+        \label{fig:fig}
+    \end{figure*}
+\end{document}
+

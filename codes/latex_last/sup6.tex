@@ -1,0 +1,89 @@
+
+
+
+
+\documentclass[twocolumn]{article}
+\usepackage{graphicx}
+\usepackage{subfig}
+\usepackage{lipsum}
+\captionsetup[figure]{font=Huge}
+%\captionsetup[subfigure]{labelfont=c}
+%\captionsetup{skip=<15mm}
+%\captionsetup[subfloat]{captionskip=40pt}
+\begin{document}
+%    \section{Introduction}
+%    \lipsum[1-5]
+    \thispagestyle{empty}
+    \begin{figure*}[t!]
+%        \renewcommand{\thesubfigure}{\Alph{subfigure}}
+        \captionsetup[subfigure]{font=Large}
+%          \centering
+        \subfloat[]{%
+            \includegraphics[width=.63\linewidth]{png/v2_ADif_fig10__sm_hv_9602_SPC1010_Scatter_pressure}%
+
+%            \label{subfig:a}%
+        }
+        \hspace{-9mm}
+        \subfloat[]{%
+            \includegraphics[width=.63\linewidth]{png/v2_ADif_fig10__sm_hv_9602_EN0505_Scatter_pressure}%
+            \label{subfig:b}%
+        }
+        \vspace{-2mm}
+%          \centering
+        \subfloat[]{%
+            \includegraphics[width=.63\linewidth]{png/v2_ADif_fig10__sm_hv_9602_SPC0505_Scatter_pressure}%
+            \label{subfig:c}%
+        }
+        \hspace{-9mm}
+        \subfloat[]{%
+            \includegraphics[width=.63\linewidth]{png/v2_ADif_fig10__sm_hv_9602_EN1010_Scatter_pressure}%
+            \label{subfig:d}%
+        }
+%        \caption{Caption}
+        \label{fig:fig}
+    \end{figure*}
+\end{document}
+
+
+
+
+
+
+
+%
+%
+%
+%
+%\documentclass[twocolumn]{article}
+%\usepackage{graphicx}
+%\usepackage{subfig}
+%\usepackage{lipsum}
+%
+%\begin{document}
+%%    \section{Introduction}
+%%    \lipsum[1-5]
+%    \thispagestyle{empty}
+%    \begin{figure*}[t!]
+%        \subfloat[]{%
+%            \includegraphics[width=.48\linewidth]{png/scatter_fig6_0910_SPC1010_pressure}%
+%            \label{subfig:a}%
+%        }\hfill
+%        \subfloat[]{%
+%            \includegraphics[width=.48\linewidth]{png/scatter_fig6_0910_EN0505_pressure}%
+%            \label{subfig:b}%
+%        }\\
+%        \subfloat[]{%
+%            \includegraphics[width=.48\linewidth]{png/scatter_fig6_0910_SPC0505_pressure}%
+%            \label{subfig:c}%
+%        }\hfill
+%        \subfloat[]{%
+%            \includegraphics[width=.48\linewidth]{png/scatter_fig6_0910_EN1010_pressure}%
+%            \label{subfig:d}%
+%        }
+%%        \caption{Caption}
+%        \label{fig:fig}
+%    \end{figure*}
+%\end{document}
+%
+%
+%

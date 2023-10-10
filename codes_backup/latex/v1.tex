@@ -1,0 +1,19 @@
+\documentclass{article}
+\usepackage{tikz} % loads graphicx and xcolor
+
+\usepackage{caption}
+\usepackage{subcaption}
+\renewcommand\thesubfigure{\Alph{subfigure}}
+
+\begin{document}
+
+\begin{figure}
+  \centering
+  {\phantomsubcaption\label{fig:1a}}
+  {\phantomsubcaption\label{fig:1b}}
+  \tikz\node[inner sep=0pt,label={[anchor=north west]north west:\subref{fig:1a}}] {\textcolor{gray}{\rule{5cm}{3cm}}};
+  \tikz\node[inner sep=0pt,label={[anchor=north west]north west:\subref{fig:1b}}] {\textcolor{gray}{\rule{5cm}{3cm}}};
+
+  \caption{This is Figure 1.}\label{fig:1}
+\end{figure}
+\end{document}

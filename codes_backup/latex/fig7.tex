@@ -1,0 +1,44 @@
+
+
+
+\documentclass[twocolumn]{article}
+\usepackage{graphicx}
+\usepackage{subfig}
+\usepackage{lipsum}
+\captionsetup[figure]{font=Huge}
+
+%\captionsetup{skip=<15mm}
+%\captionsetup[subfloat]{captionskip=40pt}
+\begin{document}
+%    \section{Introduction}
+%    \lipsum[1-5]
+    \thispagestyle{empty}
+    \begin{figure*}[t!]
+%                \renewcommand{\thesubfigure}{\Alph{subfigure}}
+        \captionsetup[subfigure]{font=Large}
+
+        \subfloat[]{%
+            \includegraphics[width=.63\linewidth]{png/scatter_2017_SPC1010_pressure}%
+
+%            \label{subfig:a}%
+        }
+        \hspace{-9mm}
+        \subfloat[]{%
+            \includegraphics[width=.63\linewidth]{png/scatter_2017_EN0505_pressure}%
+            \label{subfig:b}%
+        }
+        \vspace{-1mm}
+        \subfloat[]{%
+            \includegraphics[width=.63\linewidth]{png/scatter_2017_SPC1001_pressure}%
+            \label{subfig:c}%
+        }
+        \hspace{-9mm}
+        \subfloat[]{%
+            \includegraphics[width=.63\linewidth]{png/scatter_2017_EN1001_pressure}%
+            \label{subfig:d}%
+        }
+%        \caption{Caption}
+        \label{fig:fig}
+    \end{figure*}
+\end{document}
+

@@ -1,0 +1,35 @@
+Ss values
+
+A)  subtracting iB0
+one beta for per sim
+sonde type    EN0505          EN1010        SP0505          SP1010
+sample size    15              23               17           6
+              0.018            0.046            0.016       0.050
+              +/- 0.004        +/- 0.006        +/-0.004    +/-0.002
+
+
+B)  subtracting iB0
+using all RTs in one pool
+sonde type    EN0505          EN1010        SP0505          SP1010
+sample size    64              92               72           64
+              0.017            0.045            0.016       0.055
+              +/- 0.005        +/- 0.008        +/-0.005    +/-0.008
+
+
+
+C) without subtracting iB0
+using all RTs in one pool
+sonde type    EN0505          EN1010        SP0505          SP1010
+sample size    64              92               72           64
+              0.028            0.056            0.025       0.055
+              +/- 0.008        +/- 0.008        +/-0.008    +/-0.01
+
+
+D) without subtracting iB0
+one beta for per sim
+sonde type    EN0505          EN1010        SP0505          SP1010
+sample size    15              23               17           16
+              0.027            0.057            0.025       0.055
+              +/- 0.002        +/- 0.005        +/-0.002    +/-0.003
+
+
