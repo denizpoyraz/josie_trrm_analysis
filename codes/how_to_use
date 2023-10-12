@@ -45,5 +45,11 @@ plotting:
     plot_final_plots: this makes the scatter plots in RDif and ADif for different years
         one needs to pay attention to years etc...
 
+    plot_preparation_islow: to plot Fig 4 in the manuscript
+
+    plot_profile_plots: to plot Fig 5 in the manuscript
+
+    plot_unc_final_fig10 and fig11: to plot different versions of these plots 3 panel or 4 panel
+
 
 

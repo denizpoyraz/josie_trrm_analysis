@@ -31,7 +31,7 @@ def cuts0910(dfm):
 
     dfm = dfm[dfm.ADX == 0]
     # # v2 cuts, use this and v3 standard more conservative cuts not valid for 140, 1122, 163, 166  v2
-    # dfm = dfm[dfm.Tsim > 900]
+    dfm = dfm[dfm.Tsim > 900]
     dfm = dfm[dfm.Tsim <= 8100]
     dfm = dfm.drop(dfm[(dfm.Sim == 141) & (dfm.Team == 3)].index)
     # dfm = dfm.drop(dfm[(dfm.Sim == 143) & (dfm.Team == 2) & (dfm.Tsim > 7950) & (dfm.Tsim < 8100)].index)
