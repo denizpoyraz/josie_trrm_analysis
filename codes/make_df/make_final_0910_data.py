@@ -21,8 +21,8 @@ df1['Ifast_minib0_deconv'] = df1['Ifast_minib0_deconvo'].copy()
 df2 = pd.read_csv('/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie0910_deconv_2023_decay_added_147-149_sm_hv.csv')
 df2 = df2[df2.ADX ==0]
 
-print('list df1', list(df1))
-print('list df2', list(df2))
+print('list df1',len(df1.drop_duplicates(['Sim','Team'])), list(df1))
+print('list df2', len(df2.drop_duplicates(['Sim','Team'])),list(df2))
 
 df1['Ifast_minib0'] = df1['Ifast_minib0o']
 df1['Islow_conv'] = df1['I_slow_convo']
@@ -45,4 +45,5 @@ df2c = df2[['Sim','Team', 'iB0', 'iB1', 'iB2', 'ENSCI', 'Sol', 'ADX','Buf','PO3'
             'Islow_conv','Ifast_deconv_ib1_decay']].copy()
 
 df_0910_final = pd.concat([df1c, df2c], ignore_index=True)
+print(len(df_0910_final.drop_duplicates(['Sim','Team'])))
 df_0910_final.to_csv('/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie0910_deconv_2023_unitedpaper_sm_hv.csv')

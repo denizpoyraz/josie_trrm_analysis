@@ -351,7 +351,7 @@ for k in slist:
             plt.savefig(f'/home/poyraden/Analysis/JosieAnalysis/Plots/Plots_2023_final/v7/png/{plotname}{ffile}.png')
             plt.savefig(f'/home/poyraden/Analysis/JosieAnalysis/Plots/Plots_2023_final/v7/eps/{plotname}{ffile}.eps')
             plt.savefig(f'/home/poyraden/Analysis/JosieAnalysis/Plots/Plots_2023_final/v7/pdf/{plotname}{ffile}.pdf')
-            # plt.show()
+            plt.show()
             plt.close()
 
         if bool_three:
@@ -481,7 +481,7 @@ for k in slist:
             plt.savefig(f'/home/poyraden/Analysis/JosieAnalysis/Plots/Plots_2023_final/v7/png/{plotname}{ffile}.png')
             plt.savefig(f'/home/poyraden/Analysis/JosieAnalysis/Plots/Plots_2023_final/v7/eps/{plotname}{ffile}.eps')
             plt.savefig(f'/home/poyraden/Analysis/JosieAnalysis/Plots/Plots_2023_final/v7/pdf/{plotname}{ffile}.pdf')
-            # plt.show()
+            plt.show()
 
             plt.close()
 
@@ -609,7 +609,7 @@ for k in slist:
         plt.savefig(f'/home/poyraden/Analysis/JosieAnalysis/Plots/Plots_2023_final/v7/png/{plotname}{ffile}.png')
         plt.savefig(f'/home/poyraden/Analysis/JosieAnalysis/Plots/Plots_2023_final/v7/eps/{plotname}{ffile}.eps')
         plt.savefig(f'/home/poyraden/Analysis/JosieAnalysis/Plots/Plots_2023_final/v7/pdf/{plotname}{ffile}.pdf')
-        # plt.show()
+        plt.show()
 
         plt.close()
 
@@ -675,7 +675,7 @@ if bool_triple:
         plt.savefig(f'/home/poyraden/Analysis/JosieAnalysis/Plots/Plots_2023_final/v7/png/{plotname}{ffile}.png')
         plt.savefig(f'/home/poyraden/Analysis/JosieAnalysis/Plots/Plots_2023_final/v7/eps/{plotname}{ffile}.eps')
         plt.savefig(f'/home/poyraden/Analysis/JosieAnalysis/Plots/Plots_2023_final/v7/pdf/{plotname}{ffile}.pdf')
-        # plt.show()
+        plt.show()
 
         plt.close()
 ##################################################################################################################

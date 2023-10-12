@@ -297,7 +297,7 @@ for k in slist:
     # ax3.axvline(x=0, color='grey', linestyle='--', linewidth=3)
     # plt.grid(True)
 
-    plt.savefig(f'/home/poyraden/Analysis/JosieAnalysis/Plots/Plots_2023_final/checks/plot2_1205_{year}_{labellist[k]}.png')
+    # plt.savefig(f'/home/poyraden/Analysis/JosieAnalysis/Plots/Plots_2023_final/checks/plot2_1205_{year}_{labellist[k]}.png')
 
     plt.show()
 

@@ -55,11 +55,9 @@ df09['Year'] = '0910'
 df17['Year'] = '2017'
 df96['Year'] = '9602'
 
-# dfa = pd.concat([df09, df17, df96], ignore_index=True)
 dfa = pd.concat([df09, df17], ignore_index=True)
 
-# year = '2017'
-# year = '0910'
+
 
 # year = '9602'
 year = '0910/2017'
@@ -201,58 +199,16 @@ print_fit_variables(f'w.r.t. po3 - {year}', alist_pre, alist_pre_err, blist_pre,
 
 if write_to_df:
 
-    slist = [0, 1, 3, 4]
-    year = '2017'
-    if year == '2017': slist = [0, 2, 4, 5]
-    df = dfa[dfa.Year == year]
-    df['IminusiB1'] = df['IM'] - df['iB2']
-
-
-    prof_cor = apply_calibration(df, coeff)
-
-    df_cor = pd.concat([prof_cor[0], prof_cor[2], prof_cor[4], prof_cor[5]], ignore_index=True)
-    df_cor['ADif'], df_cor['RDif'] = cal_dif(df_cor, 'IminusiB1', 'I_OPM_kom', 'ADif', 'RDif')
-    df_cor['ADif_cor'], df_cor['RDif_cor'] = cal_dif(df_cor, 'Ifast_minib0_deconv_sm10', 'I_OPM_jma', 'ADif_cor', 'RDif_cor')
-    df_cor['ADif_cal'], df_cor['RDif_cal'] = cal_dif(df_cor, 'I_corrected', 'I_OPM_jma', 'ADif_cal',
-                                                               'RDif_cal')
-    # df_cor.to_csv(f'/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie{year}_calibrated{pre}.csv')
-
-    ######
     year = '0910'
-    slist = [0,1,3,4]
-    if year == '2017': slist = [0,2,4,5]
-    df = dfa[dfa.Year == year ]
-    # df = df96
-    df['IminusiB1'] = df['IM'] - df['iB1']
-
-    prof_cor = apply_calibration(df, coeff)
-
-    df_cor = pd.concat([prof_cor[0], prof_cor[1], prof_cor[3], prof_cor[4]], ignore_index=True)
-    df_cor['ADif'], df_cor['RDif'] = cal_dif(df_cor, 'IminusiB1', 'I_OPM_kom', 'ADif', 'RDif')
-    df_cor['ADif_cor'], df_cor['RDif_cor'] = cal_dif(df_cor, 'Ifast_minib0_deconv_sm10', 'I_OPM_jma', 'ADif_cor', 'RDif_cor')
-    df_cor['ADif_cal'], df_cor['RDif_cal'] = cal_dif(df_cor, 'I_corrected', 'I_OPM_jma', 'ADif_cal',
-                                                               'RDif_cal')
-    df_cor.to_csv(f'/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie{year}_calibrated{pre}_publicdata.csv')
-
     ######
-    year = '9602'
-    slist = [0, 1, 3, 4]
-    if year == '2017': slist = [0, 2, 4, 5]
-    df = df96
+    slist = [0,1,3,4]
+    df = pd.read_csv('/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie0910_Deconv_preparationadded_all_2023paper_sm_hv_paper.csv')
     df['IminusiB1'] = df['IM'] - df['iB1']
+    df['Ifast_minib0_deconv_sm10'] = df['Ifast_minib0_deconv_ib1_decay_all']
 
     prof_cor = apply_calibration(df, coeff)
 
     df_cor = pd.concat([prof_cor[0], prof_cor[1], prof_cor[3], prof_cor[4]], ignore_index=True)
-    df_cor['ADif'], df_cor['RDif'] = cal_dif(df_cor, 'IminusiB1', 'I_OPM_kom', 'ADif', 'RDif')
-    df_cor['ADif_cor'], df_cor['RDif_cor'] = cal_dif(df_cor, 'Ifast_minib0_deconv_sm10', 'I_OPM_jma', 'ADif_cor',
-                                                     'RDif_cor')
-    df_cor['ADif_cal'], df_cor['RDif_cal'] = cal_dif(df_cor, 'I_corrected', 'I_OPM_jma', 'ADif_cal',
-                                                     'RDif_cal')
-    # df_cor.to_csv(f'/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie{year}_calibrated{pre}.csv')
 
-
-
-
-
+    df_cor.to_csv(f'/home/poyraden/Analysis/JOSIEfiles/Proccessed/Josie{year}_calibrated{pre}_all_publicdata.csv')
 

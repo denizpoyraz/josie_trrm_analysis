@@ -228,7 +228,7 @@ def errorPlot_ARDif_withtext(xlist, xerrorlist, Y, xra, yra, maintitle, xtitle, 
     plt.savefig('/home/poyraden/Analysis/JosieAnalysis/Plots/Plots_2023_final/v7/png/newinterp_range40_'+ plotname + '.png')
     plt.savefig('/home/poyraden/Analysis/JosieAnalysis/Plots/Plots_2023_final/v7/pdf/newinterp_range40_'+ plotname + '.pdf')
     plt.savefig('/home/poyraden/Analysis/JosieAnalysis/Plots/Plots_2023_final/v7/eps/newinterp_range40_'+ plotname + '.eps')
-    # plt.show()
+    plt.show()
 
 
     plt.close()
